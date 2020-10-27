@@ -1,0 +1,42 @@
+{
+    "name": "tienvx/single-color-petrinet",
+    "type": "library",
+    "description": "Single Color Petrinet framework for PHP 7.2+",
+    "keywords": ["petrinet", "single-color-petrinet"],
+    "homepage": "https://github.com/tienvx/single-color-petrinet",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tien Vo Xuan",
+            "email": "tien.xuan.vo@gmail.com",
+            "homepage": "https://tienvx.github.io/"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "florianv/petrinet": "dev-update as 2.0.1"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^6.2",
+        "symfony/expression-language": "^5.1"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/tienvx/petrinet.git"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "SingleColorPetrinet\\": "src/SingleColorPetrinet/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
