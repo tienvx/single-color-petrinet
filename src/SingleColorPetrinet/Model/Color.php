@@ -21,7 +21,7 @@ class Color implements ColorInterface
     /**
      * @var array
      */
-    protected $data;
+    protected $data = [];
 
     public function __construct(array $values = [])
     {
