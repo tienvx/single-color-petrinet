@@ -19,6 +19,7 @@ use Petrinet\Service\TransitionService;
 use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
+use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
 
@@ -65,7 +66,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             return false;
         }
 
-        if ($transition instanceof GuardedTransitionInterface) {
+        if ($transition instanceof GuardedTransitionInterface && $transition->getGuard() instanceof ExpressionInterface) {
             return (bool) $this->expressionEvaluator->evaluate($transition->getGuard(), $this->colorfulFactory->getColor());
         }
 
