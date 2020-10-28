@@ -8,6 +8,7 @@ use PhpSpec\ObjectBehavior;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
+use SingleColorPetrinet\Model\GuardedTransitionInterface;
 
 class SingleColorPetrinetBuilderSpec extends ObjectBehavior
 {
@@ -37,5 +38,16 @@ class SingleColorPetrinetBuilderSpec extends ObjectBehavior
 
         $this->beConstructedWith($factory);
         $this->connect($transition, $place, 1, $expression)->shouldReturn($this);
+    }
+
+    function it_create_a_transition_with_guard(
+        ColorfulFactoryInterface $factory,
+        GuardedTransitionInterface $transition,
+        ExpressionInterface $guard
+    ) {
+        $factory->createTransition()->willReturn($transition);
+        $transition->setGuard($guard)->shouldBeCalled();
+        $this->beConstructedWith($factory);
+        $this->transition($guard)->shouldReturn($transition);
     }
 }

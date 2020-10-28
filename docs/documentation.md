@@ -34,8 +34,7 @@ $place = $builder->place();
 $transition = $builder->transition();
 
 // Creating a transition with guard
-$transition = $builder->transition();
-$transition->setGuard($factory->createExpression('count > 1'));
+$transition = $builder->transition($factory->createExpression('count > 1'));
 
 // Connecting a place to a transition
 $builder->connect($place, $transition);

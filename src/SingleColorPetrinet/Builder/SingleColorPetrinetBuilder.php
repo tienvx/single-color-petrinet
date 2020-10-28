@@ -19,6 +19,7 @@ use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
+use SingleColorPetrinet\Model\GuardedTransitionInterface;
 
 /**
  * Helps building Single Color Petrinets.
@@ -70,5 +71,19 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
         } else {
             return parent::connect($source, $target, $weight);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function transition()
+    {
+        $guard = func_num_args() === 1 ? func_get_arg(0) : null;
+        $transition = parent::transition();
+        if ($guard instanceof ExpressionInterface && $transition instanceof GuardedTransitionInterface) {
+            $transition->setGuard($guard);
+        }
+
+        return $transition;
     }
 }
