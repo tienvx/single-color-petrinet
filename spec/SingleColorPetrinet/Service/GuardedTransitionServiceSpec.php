@@ -14,6 +14,7 @@ use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\Expression;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
+use SingleColorPetrinet\Service\Exception\MissingColorException;
 use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 
@@ -35,8 +36,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
-    )
-    {
+    ) {
         $this->mock_is_enabled($expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, true);
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
         $this->isEnabled($transition, $marking)->shouldReturn(true);
@@ -52,8 +52,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
-    )
-    {
+    )  {
         $this->mock_is_enabled($expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, false);
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
         $this->isEnabled($transition, $marking)->shouldReturn(false);
@@ -71,8 +70,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         TokenInterface $token,
         TokenInterface $newToken,
         ColorInterface $color
-    )
-    {
+    ) {
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
 
         $this->mock_is_enabled($expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
@@ -112,7 +110,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ])->shouldBeCalled();
 
         $placeMarking->removeToken($token)->shouldBeCalledTimes(2);
-        $colorfulFactory->createToken()->shouldBeCalledTimes(2)->willReturn($newToken);
+        $colorfulFactory->createToken($color)->shouldBeCalledTimes(2)->willReturn($newToken);
         $placeMarking->setTokens([$newToken])->shouldBeCalledTimes(2);
         $this->fire($transition, $marking);
     }
@@ -128,8 +126,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
-    )
-    {
+    ) {
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
 
         $this->mock_is_enabled($expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
@@ -162,6 +159,29 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
 
         $this
             ->shouldThrow(new OutputArcExpressionConflictException("Output arc's expressions conflict."))
+            ->duringFire($transition, $marking)
+        ;
+    }
+
+    function it_throws_an_exception_when_missing_color_in_marking(
+        ColorfulFactoryInterface $colorfulFactory,
+        ExpressionEvaluatorInterface $expressionEvaluator,
+        ExpressionalOutputArcInterface $arc1,
+        ExpressionalOutputArcInterface $arc2,
+        PlaceInterface $place,
+        PlaceMarkingInterface $placeMarking,
+        GuardedTransitionInterface $transition,
+        ColorfulMarkingInterface $marking,
+        TokenInterface $token,
+        ColorInterface $color
+    ) {
+        $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
+
+        $this->mock_is_enabled($expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
+        $marking->getColor()->willReturn(null);
+
+        $this
+            ->shouldThrow(new MissingColorException('Missing color in marking'))
             ->duringFire($transition, $marking)
         ;
     }

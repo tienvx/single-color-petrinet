@@ -104,7 +104,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             throw new TransitionNotEnabledException('Cannot fire a disabled transition.');
         }
 
-        if (!$marking instanceof ColorfulMarkingInterface || !$marking->getColor() instanceof ColorInterface) {
+        if (!$marking instanceof ColorfulMarkingInterface || !(($color = $marking->getColor()) instanceof ColorInterface)) {
             throw new MissingColorException('Missing color in marking');
         }
 
@@ -112,7 +112,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
         $newColors = [];
         foreach ($transition->getOutputArcs() as $arc) {
             if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
-                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor());
+                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $color);
                 $newColor = $this->colorfulFactory->createColor($result);
                 $newColors[] = $newColor;
             }
@@ -125,11 +125,42 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             }
         }
 
-        parent::fire($transition, $marking);
+        // Remove tokens from the input places
+        foreach ($transition->getInputArcs() as $arc) {
+            $arcWeight = $arc->getWeight();
+            $place = $arc->getPlace();
+            $placeMarking = $marking->getPlaceMarking($place);
+            $tokens = $placeMarking->getTokens();
+
+            for ($i = 0; $i < $arcWeight; $i++) {
+                $placeMarking->removeToken($tokens[$i]);
+            }
+        }
+
+        // Add tokens to the output places
+        foreach ($transition->getOutputArcs() as $arc) {
+            $arcWeight = $arc->getWeight();
+            $place = $arc->getPlace();
+            $placeMarking = $marking->getPlaceMarking($place);
+
+            if (null === $placeMarking) {
+                $placeMarking = $this->colorfulFactory->createPlaceMarking();
+                $placeMarking->setPlace($place);
+                $marking->addPlaceMarking($placeMarking);
+            }
+
+            // Create the tokens
+            $tokens = array();
+            for ($i = 0; $i < $arcWeight; $i++) {
+                $tokens[] = $this->colorfulFactory->createToken($color);
+            }
+
+            $placeMarking->setTokens($tokens);
+        }
 
         // Merge all new colors to a single color
         foreach ($newColors as $newColor) {
-            $marking->getColor()->fromArray($newColor->toArray());
+            $color->fromArray($newColor->toArray());
         }
     }
 }
