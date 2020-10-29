@@ -16,11 +16,13 @@ use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
 use Petrinet\Service\Exception\TransitionNotEnabledException;
 use Petrinet\Service\TransitionService;
-use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
+use SingleColorPetrinet\Model\ColorfulMarkingInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
+use SingleColorPetrinet\Service\Exception\MissingColorException;
 use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
 
 /**
@@ -66,8 +68,12 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             return false;
         }
 
-        if ($transition instanceof GuardedTransitionInterface && $transition->getGuard() instanceof ExpressionInterface) {
-            return (bool) $this->expressionEvaluator->evaluate($transition->getGuard(), $this->colorfulFactory->getColor());
+        if ($transition instanceof GuardedTransitionInterface &&
+            $transition->getGuard() instanceof ExpressionInterface &&
+            $marking instanceof ColorfulMarkingInterface &&
+            $marking->getColor() instanceof ColorInterface
+        ) {
+            return (bool)$this->expressionEvaluator->evaluate($transition->getGuard(), $marking->getColor());
         }
 
         return true;
@@ -98,13 +104,16 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             throw new TransitionNotEnabledException('Cannot fire a disabled transition.');
         }
 
+        if (!$marking instanceof ColorfulMarkingInterface || !$marking->getColor() instanceof ColorInterface) {
+            throw new MissingColorException('Missing color in marking');
+        }
+
         // Calculates new colors
         $newColors = [];
         foreach ($transition->getOutputArcs() as $arc) {
             if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
-                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $this->colorfulFactory->getColor());
-                $newColor = new Color();
-                $newColor->fromArray((array) $result);
+                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor());
+                $newColor = $this->colorfulFactory->createColor($result);
                 $newColors[] = $newColor;
             }
         }
@@ -120,7 +129,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
 
         // Merge all new colors to a single color
         foreach ($newColors as $newColor) {
-            $this->colorfulFactory->getColor()->fromArray($newColor->toArray());
+            $marking->getColor()->fromArray($newColor->toArray());
         }
     }
 }

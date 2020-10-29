@@ -22,11 +22,6 @@ $factory = new \SingleColorPetrinet\Model\ColorfulFactory();
 // Instantiates the petrinet builder
 $builder = new \SingleColorPetrinet\Builder\SingleColorPetrinetBuilder($factory);
 
-// Sets some values to the color
-$factory->getColor()->fromArray([
-    'count' => 0,
-]);
-
 // Creating a place
 $place = $builder->place();
 
@@ -58,8 +53,13 @@ $petrinet = $builder->getPetrinet();
 // Instantiates the marking builder
 $builder = new \Petrinet\Builder\MarkingBuilder($factory);
 
-// Marks a place with the specified tokens number
-$builder->mark($place, 3);
+// Creates ONLY ONE color and sets some values to it
+$color = $factory->createColor([
+    'count' => 0,
+]);
+
+// Marks a place with the specified tokens number and (the SINGLE) color
+$builder->mark($place, 3, $color);
 
 // Retrieving the Marking
 $marking = $builder->getMarking();

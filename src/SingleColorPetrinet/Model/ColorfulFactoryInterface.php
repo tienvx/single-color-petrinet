@@ -30,9 +30,11 @@ interface ColorfulFactoryInterface extends FactoryInterface
     public function createExpression(string $expression);
 
     /**
-     * Gets single color.
+     * Creates a new color instance.
+     *
+     * @param array $values
      *
      * @return ColorInterface
      */
-    public function getColor(): ColorInterface;
+    public function createColor(array $values = []): ColorInterface;
 }

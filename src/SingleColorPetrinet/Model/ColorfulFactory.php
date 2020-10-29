@@ -20,7 +20,6 @@ use Petrinet\Model\Factory;
  */
 class ColorfulFactory extends Factory implements ColorfulFactoryInterface
 {
-    private $color;
     private $colorClass;
     private $expressionClass;
 
@@ -42,7 +41,6 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $markingClass = 'Petrinet\Model\Marking'
     ) {
         $this->colorClass = $colorClass;
-        $this->color = $this->createColor();
         $this->expressionClass = $expressionClass;
         parent::__construct(
             $petrinetClass,
@@ -57,27 +55,17 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     }
 
     /**
-     * Creates a new color instance.
-     *
-     * @return ColorInterface
+     * {@inheritdoc}
      */
-    protected function createColor()
+    public function createColor(array $values = []): ColorInterface
     {
-        $color = new $this->colorClass();
+        $color = new $this->colorClass($values);
 
         if (!$color instanceof ColorInterface) {
             throw new \RuntimeException('The color class must implement "SingleColorPetrinet\Model\ColorInterface".');
         }
 
         return $color;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getColor(): ColorInterface
-    {
-        return $this->color;
     }
 
     /**
@@ -99,10 +87,11 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
      */
     public function createToken()
     {
+        $color = func_num_args() === 1 ? func_get_arg(0) : null;
         $token = parent::createToken();
 
-        if ($token instanceof ColorfulTokenInterface) {
-            $token->setColor($this->color);
+        if ($token instanceof ColorfulTokenInterface && $color instanceof ColorInterface) {
+            $token->setColor($color);
         }
 
         return $token;

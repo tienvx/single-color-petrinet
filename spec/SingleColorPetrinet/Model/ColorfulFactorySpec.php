@@ -30,4 +30,9 @@ class ColorfulFactorySpec extends ObjectBehavior
     {
         $this->createToken()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\ColorfulToken');
     }
+
+    function it_creates_a_color()
+    {
+        $this->createColor()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\Color');
+    }
 }

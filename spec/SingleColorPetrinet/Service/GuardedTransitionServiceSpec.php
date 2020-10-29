@@ -3,20 +3,19 @@
 namespace spec\SingleColorPetrinet\Service;
 
 use Petrinet\Model\InputArcInterface;
-use Petrinet\Model\MarkingInterface;
 use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\PlaceMarkingInterface;
 use Petrinet\Model\TokenInterface;
 use PhpSpec\ObjectBehavior;
+use SingleColorPetrinet\Model\Color;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
+use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\Expression;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
-use SingleColorPetrinet\Service\ExpressionLanguageEvaluator;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 class GuardedTransitionServiceSpec extends ObjectBehavior
 {
@@ -33,12 +32,12 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         PlaceInterface $place,
         PlaceMarkingInterface $placeMarking,
         GuardedTransitionInterface $transition,
-        MarkingInterface $marking,
+        ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
     )
     {
-        $this->mock_services($colorfulFactory, $expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, true);
+        $this->mock_is_enabled($expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, true);
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
         $this->isEnabled($transition, $marking)->shouldReturn(true);
     }
@@ -50,12 +49,12 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         PlaceInterface $place,
         PlaceMarkingInterface $placeMarking,
         GuardedTransitionInterface $transition,
-        MarkingInterface $marking,
+        ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
     )
     {
-        $this->mock_services($colorfulFactory, $expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, false);
+        $this->mock_is_enabled($expressionEvaluator, [$arc], $place, $placeMarking, $transition, $marking, $token, $color, false);
         $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
         $this->isEnabled($transition, $marking)->shouldReturn(false);
     }
@@ -68,31 +67,50 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         PlaceInterface $place,
         PlaceMarkingInterface $placeMarking,
         GuardedTransitionInterface $transition,
-        MarkingInterface $marking,
+        ColorfulMarkingInterface $marking,
         TokenInterface $token,
         TokenInterface $newToken,
         ColorInterface $color
     )
     {
-        $this->beConstructedWith($colorfulFactory, new ExpressionLanguageEvaluator(new ExpressionLanguage()));
+        $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
 
-        $this->mock_services($colorfulFactory, $expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
+        $this->mock_is_enabled($expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
         $transition->getOutputArcs()->willReturn([$arc1, $arc2]);
 
-        $arc1->getExpression()->willReturn(new Expression('{product: 2}'));
-        $arc2->getExpression()->willReturn(new Expression('{count: count + 1}'));
+        $expression1 = new Expression('{product: 2}');
+        $expression2 = new Expression('{count: count + 1}');
+        $arc1->getExpression()->willReturn($expression1);
+        $arc2->getExpression()->willReturn($expression2);
 
-        $color->toArray()->willReturn([
-            'product' => '1',
-            'count' => '2',
+        $color1 = new Color([
+            'product' => 2,
+        ]);
+        $color2 = new Color([
+            'count' => 3,
+        ]);
+        $colorfulFactory->createColor([
+            'product' => 2,
+        ])->willReturn($color1);
+        $colorfulFactory->createColor([
+            'count' => 3,
+        ])->willReturn($color2);
+
+        $expressionEvaluator->evaluate($expression1, $color)->willReturn([
+            'product' => 2,
+        ]);
+        $expressionEvaluator->evaluate($expression2, $color)->willReturn([
+            'count' => 3
         ]);
 
         $color->fromArray([
-            'product' => '2',
+            'product' => 2,
         ])->shouldBeCalled();
+
         $color->fromArray([
-            'count' => '3',
+            'count' => 3,
         ])->shouldBeCalled();
+
         $placeMarking->removeToken($token)->shouldBeCalledTimes(2);
         $colorfulFactory->createToken()->shouldBeCalledTimes(2)->willReturn($newToken);
         $placeMarking->setTokens([$newToken])->shouldBeCalledTimes(2);
@@ -107,20 +125,39 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         PlaceInterface $place,
         PlaceMarkingInterface $placeMarking,
         GuardedTransitionInterface $transition,
-        MarkingInterface $marking,
+        ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color
     )
     {
-        $this->beConstructedWith($colorfulFactory, new ExpressionLanguageEvaluator(new ExpressionLanguage()));
+        $this->beConstructedWith($colorfulFactory, $expressionEvaluator);
 
-        $this->mock_services($colorfulFactory, $expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
+        $this->mock_is_enabled($expressionEvaluator, [$arc1, $arc2], $place, $placeMarking, $transition, $marking, $token, $color, true);
         $transition->getOutputArcs()->willReturn([$arc1, $arc2]);
 
-        $arc1->getExpression()->willReturn(new Expression('{count: count + 1}'));
-        $arc2->getExpression()->willReturn(new Expression('{count: count - 1}'));
-        $color->toArray()->willReturn([
-            'count' => '2',
+        $expression1 = new Expression('{count: count - 1}');
+        $expression2 = new Expression('{count: count + 1}');
+        $arc1->getExpression()->willReturn($expression1);
+        $arc2->getExpression()->willReturn($expression2);
+
+        $color1 = new Color([
+            'count' => 1,
+        ]);
+        $color2 = new Color([
+            'count' => 3,
+        ]);
+        $colorfulFactory->createColor([
+            'count' => 1,
+        ])->willReturn($color1);
+        $colorfulFactory->createColor([
+            'count' => 3,
+        ])->willReturn($color2);
+
+        $expressionEvaluator->evaluate($expression1, $color)->willReturn([
+            'count' => 1,
+        ]);
+        $expressionEvaluator->evaluate($expression2, $color)->willReturn([
+            'count' => 3
         ]);
 
         $this
@@ -129,14 +166,13 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ;
     }
 
-    private function mock_services(
-        ColorfulFactoryInterface $colorfulFactory,
+    private function mock_is_enabled(
         ExpressionEvaluatorInterface $expressionEvaluator,
         array $arcs,
         PlaceInterface $place,
         PlaceMarkingInterface $placeMarking,
         GuardedTransitionInterface $transition,
-        MarkingInterface $marking,
+        ColorfulMarkingInterface $marking,
         TokenInterface $token,
         ColorInterface $color,
         bool $enabled
@@ -147,12 +183,12 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         }
 
         $placeMarking->getTokens()->willReturn([$token]);
-        $marking->getPlaceMarking($place->getWrappedObject())->willReturn($placeMarking);
+        $marking->getPlaceMarking($place)->willReturn($placeMarking);
         $transition->getInputArcs()->willReturn($arcs);
 
         $guard = new Expression('true');
         $transition->getGuard()->willReturn($guard);
-        $colorfulFactory->getColor()->willReturn($color);
+        $marking->getColor()->willReturn($color);
         $expressionEvaluator->evaluate($guard, $color)->willReturn($enabled);
     }
 }
