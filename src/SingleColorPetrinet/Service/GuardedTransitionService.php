@@ -101,9 +101,8 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
         // Calculates new colors
         $newColors = [];
         foreach ($transition->getOutputArcs() as $arc) {
-            if ($arc instanceof ExpressionalOutputArcInterface) {
-                $expression = $arc->getExpression();
-                $result = $this->expressionEvaluator->evaluate($expression, $this->colorfulFactory->getColor());
+            if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
+                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $this->colorfulFactory->getColor());
                 $newColor = new Color();
                 $newColor->fromArray((array) $result);
                 $newColors[] = $newColor;
