@@ -37,7 +37,7 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $inputArcClass = 'Petrinet\Model\InputArc',
         $outputArcClass = 'SingleColorPetrinet\Model\ExpressionalOutputArc',
         $placeMarkingClass = 'Petrinet\Model\PlaceMarking',
-        $tokenClass = 'SingleColorPetrinet\Model\ColorfulToken',
+        $tokenClass = 'Petrinet\Model\Token',
         $markingClass = 'Petrinet\Model\Marking'
     ) {
         $this->colorClass = $colorClass;
@@ -80,20 +80,5 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         }
 
         return $expression;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createToken()
-    {
-        $color = func_num_args() === 1 ? func_get_arg(0) : null;
-        $token = parent::createToken();
-
-        if ($token instanceof ColorfulTokenInterface && $color instanceof ColorInterface) {
-            $token->setColor($color);
-        }
-
-        return $token;
     }
 }

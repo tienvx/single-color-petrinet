@@ -53,16 +53,15 @@ $petrinet = $builder->getPetrinet();
 // Instantiates the marking builder
 $builder = new \Petrinet\Builder\MarkingBuilder($factory);
 
-// Creates ONLY ONE color and sets some values to it
+// Creates color and sets some values to it
 $color = $factory->createColor([
     'count' => 0,
 ]);
 
-// Marks a place with the specified tokens number and (the SINGLE) color
-$builder->mark($place, 3, $color);
-
-// Retrieving the Marking
-$marking = $builder->getMarking();
+// Marks a place with the specified tokens number and color
+$marking = $builder->mark($place, 3)
+    ->getMarking()
+    ->setColor($color);
 ```
 
 ### Fire a transition

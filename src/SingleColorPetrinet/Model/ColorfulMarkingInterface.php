@@ -21,9 +21,16 @@ use Petrinet\Model\MarkingInterface as BaseMarkingInterface;
 interface ColorfulMarkingInterface extends BaseMarkingInterface
 {
     /**
-     * Gets the first (and single) color.
+     * Gets color.
      *
-     * @return ColorInterface|null
+     * @return ColorInterface
      */
-    public function getColor(): ?ColorInterface;
+    public function getColor(): ColorInterface;
+
+    /**
+     * Sets color.
+     *
+     * @param ColorInterface $color
+     */
+    public function setColor(ColorInterface $color): void;
 }

@@ -14,15 +14,12 @@ namespace SingleColorPetrinet\Service;
 use Petrinet\Model\MarkingInterface;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
-use Petrinet\Service\Exception\TransitionNotEnabledException;
 use Petrinet\Service\TransitionService;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
-use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use SingleColorPetrinet\Service\Exception\MissingColorException;
 use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
 
 /**
@@ -70,8 +67,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
 
         if ($transition instanceof GuardedTransitionInterface &&
             $transition->getGuard() instanceof ExpressionInterface &&
-            $marking instanceof ColorfulMarkingInterface &&
-            $marking->getColor() instanceof ColorInterface
+            $marking instanceof ColorfulMarkingInterface
         ) {
             return (bool)$this->expressionEvaluator->evaluate($transition->getGuard(), $marking->getColor());
         }
@@ -100,67 +96,32 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
      */
     public function fire(TransitionInterface $transition, MarkingInterface $marking)
     {
-        if (!$this->isEnabled($transition, $marking)) {
-            throw new TransitionNotEnabledException('Cannot fire a disabled transition.');
-        }
+        if ($marking instanceof ColorfulMarkingInterface) {
+            // Calculates new colors
+            $newColors = [];
+            foreach ($transition->getOutputArcs() as $arc) {
+                if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
+                    $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor());
+                    $newColor = $this->colorfulFactory->createColor($result);
+                    $newColors[] = $newColor;
+                }
+            }
 
-        if (!$marking instanceof ColorfulMarkingInterface || !(($color = $marking->getColor()) instanceof ColorInterface)) {
-            throw new MissingColorException('Missing color in marking');
-        }
-
-        // Calculates new colors
-        $newColors = [];
-        foreach ($transition->getOutputArcs() as $arc) {
-            if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
-                $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $color);
-                $newColor = $this->colorfulFactory->createColor($result);
-                $newColors[] = $newColor;
+            // Checks color conflict
+            for ($i = 0; $i < count($newColors) - 1; $i++) {
+                if ($newColors[$i]->conflict($newColors[$i + 1])) {
+                    throw new OutputArcExpressionConflictException("Output arc's expressions conflict.");
+                }
             }
         }
 
-        // Checks color conflict
-        for ($i = 0; $i < count($newColors) - 1; $i++) {
-            if ($newColors[$i]->conflict($newColors[$i + 1])) {
-                throw new OutputArcExpressionConflictException("Output arc's expressions conflict.");
+        parent::fire($transition, $marking);
+
+        if ($marking instanceof ColorfulMarkingInterface) {
+            // Merge all new colors to a single color
+            foreach ($newColors as $newColor) {
+                $marking->getColor()->fromArray($newColor->toArray());
             }
-        }
-
-        // Remove tokens from the input places
-        foreach ($transition->getInputArcs() as $arc) {
-            $arcWeight = $arc->getWeight();
-            $place = $arc->getPlace();
-            $placeMarking = $marking->getPlaceMarking($place);
-            $tokens = $placeMarking->getTokens();
-
-            for ($i = 0; $i < $arcWeight; $i++) {
-                $placeMarking->removeToken($tokens[$i]);
-            }
-        }
-
-        // Add tokens to the output places
-        foreach ($transition->getOutputArcs() as $arc) {
-            $arcWeight = $arc->getWeight();
-            $place = $arc->getPlace();
-            $placeMarking = $marking->getPlaceMarking($place);
-
-            if (null === $placeMarking) {
-                $placeMarking = $this->colorfulFactory->createPlaceMarking();
-                $placeMarking->setPlace($place);
-                $marking->addPlaceMarking($placeMarking);
-            }
-
-            // Create the tokens
-            $tokens = array();
-            for ($i = 0; $i < $arcWeight; $i++) {
-                $tokens[] = $this->colorfulFactory->createToken($color);
-            }
-
-            $placeMarking->setTokens($tokens);
-        }
-
-        // Merge all new colors to a single color
-        foreach ($newColors as $newColor) {
-            $color->fromArray($newColor->toArray());
         }
     }
 }

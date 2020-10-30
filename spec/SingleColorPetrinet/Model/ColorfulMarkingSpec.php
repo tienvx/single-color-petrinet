@@ -3,14 +3,13 @@
 namespace spec\SingleColorPetrinet\Model;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use SingleColorPetrinet\Model\Color;
 
-class ColorfulTokenSpec extends ObjectBehavior
+class ColorfulMarkingSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('SingleColorPetrinet\Model\ColorfulToken');
+        $this->shouldHaveType('SingleColorPetrinet\Model\ColorfulMarking');
     }
 
     function it_gets_and_sets_color()

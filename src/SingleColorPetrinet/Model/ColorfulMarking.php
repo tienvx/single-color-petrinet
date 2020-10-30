@@ -21,18 +21,25 @@ use Petrinet\Model\Marking as BaseMarking;
 class ColorfulMarking extends BaseMarking implements ColorfulMarkingInterface
 {
     /**
+     * The color.
+     *
+     * @var ColorInterface
+     */
+    protected $color;
+
+    /**
      * {@inheritdoc}
      */
-    public function getColor(): ?ColorInterface
+    public function getColor(): ColorInterface
     {
-        foreach ($this->placeMarkings as $placeMarking) {
-            foreach ($placeMarking->getTokens() as $token) {
-                if ($token instanceof ColorfulTokenInterface) {
-                    return $token->getColor();
-                }
-            }
-        }
+        return $this->color;
+    }
 
-        return null;
+    /**
+     * {@inheritdoc}
+     */
+    public function setColor(ColorInterface $color): void
+    {
+        $this->color = $color;
     }
 }
