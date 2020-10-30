@@ -59,9 +59,10 @@ $color = $factory->createColor([
 ]);
 
 // Marks a place with the specified tokens number and color
-$marking = $builder->mark($place, 3)
-    ->getMarking()
-    ->setColor($color);
+$marking = $builder
+    ->mark($place, 3)
+    ->getMarking();
+$marking->setColor($color);
 ```
 
 ### Fire a transition

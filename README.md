@@ -1,7 +1,7 @@
 # Single Color Petrinet [![Build Status][actions_badge]][actions_link] [![Version][version-image]][version-url] [![PHP Version][php-version-image]][php-version-url]
 
-This framework allows to build, vizualize and execute [Single Color Petrinet](#what-is-single-color-petrinet)
-which can be used to build workflow engines. It provides the core domain model of [Single Color Petrinet](#what-is-single-color-petrinet)
+This framework allows to build, vizualize and execute [Single Color Petrinet][docs]
+which can be used to build workflow engines. It provides the core domain model of [Single Color Petrinet][docs]
 as well as services to manage its execution.
 
 ## Installation
@@ -26,3 +26,5 @@ $ composer require tienvx/single-color-petrinet
 
 [php-version-url]: https://packagist.org/packages/tienvx/coloured-petrinet
 [php-version-image]: http://img.shields.io/badge/php-7.2.0+-ff69b4.svg
+
+[docs]: https://github.com/tienvx/single-color-petrinet/blob/master/docs/documentation.md#what-is-single-color-petrinet
