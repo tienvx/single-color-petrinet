@@ -29,7 +29,7 @@ $place = $builder->place();
 $transition = $builder->transition();
 
 // Creating a transition with guard
-$transition = $builder->transition($factory->createExpression('count > 1'));
+$transition = $builder->transition('count > 1');
 
 // Connecting a place to a transition
 $builder->connect($place, $transition);
@@ -41,7 +41,7 @@ $builder->connect($transition, $place);
 $builder->connect($place, $transition, 3);
 
 // Connecting a transition to a place with expression
-$builder->connect($builder->transition(), $builder->place(), 1, $factory->createExpression('{count: count + 1}'));
+$builder->connect($builder->transition(), $builder->place(), 1, '{count: count + 1}');
 
 // Retrieving the Petrinet
 $petrinet = $builder->getPetrinet();
