@@ -27,6 +27,7 @@ class SingleColorPetrinetBuilderSpec extends ObjectBehavior
     )
     {
         $factory->createOutputArc()->willReturn($arc);
+        $factory->createExpression('output arc expression')->willReturn($expression);
 
         $arc->setTransition($transition)->shouldBeCalled();
         $arc->setPlace($place)->shouldBeCalled();
@@ -37,7 +38,7 @@ class SingleColorPetrinetBuilderSpec extends ObjectBehavior
         $place->addInputArc($arc)->shouldBeCalled();
 
         $this->beConstructedWith($factory);
-        $this->connect($transition, $place, 1, $expression)->shouldReturn($this);
+        $this->connect($transition, $place, 1, 'output arc expression')->shouldReturn($this);
     }
 
     function it_create_a_transition_with_guard(
@@ -46,8 +47,9 @@ class SingleColorPetrinetBuilderSpec extends ObjectBehavior
         ExpressionInterface $guard
     ) {
         $factory->createTransition()->willReturn($transition);
+        $factory->createExpression('transition guard')->willReturn($guard);
         $transition->setGuard($guard)->shouldBeCalled();
         $this->beConstructedWith($factory);
-        $this->transition($guard)->shouldReturn($transition);
+        $this->transition('transition guard')->shouldReturn($transition);
     }
 }

@@ -17,7 +17,6 @@ use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
-use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 
 /**
@@ -50,7 +49,7 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
     {
         $expression = func_num_args() === 4 ? func_get_arg(3) : null;
         if (
-            $expression instanceof ExpressionInterface &&
+            is_string($expression) &&
             $source instanceof TransitionInterface &&
             $target instanceof PlaceInterface
         ) {
@@ -58,7 +57,7 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
             $arc->setPlace($target);
             $arc->setTransition($source);
             if ($arc instanceof ExpressionalOutputArcInterface) {
-                $arc->setExpression($expression);
+                $arc->setExpression($this->colorfulFactory->createExpression($expression));
             }
 
             $arc->setWeight($weight);
@@ -78,8 +77,8 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
     {
         $guard = func_num_args() === 1 ? func_get_arg(0) : null;
         $transition = parent::transition();
-        if ($guard instanceof ExpressionInterface && $transition instanceof GuardedTransitionInterface) {
-            $transition->setGuard($guard);
+        if (is_string($guard) && $transition instanceof GuardedTransitionInterface) {
+            $transition->setGuard($this->colorfulFactory->createExpression($guard));
         }
 
         return $transition;
