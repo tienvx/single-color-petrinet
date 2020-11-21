@@ -12,7 +12,6 @@
 namespace SingleColorPetrinet\Builder;
 
 use Petrinet\Builder\PetrinetBuilder;
-use Petrinet\Model\FactoryInterface;
 use Petrinet\Model\NodeInterface;
 use Petrinet\Model\PlaceInterface;
 use Petrinet\Model\TransitionInterface;
@@ -29,18 +28,18 @@ use SingleColorPetrinet\Model\GuardedTransitionInterface;
 class SingleColorPetrinetBuilder extends PetrinetBuilder
 {
     /**
-     * The factory.
+     * The colorful factory.
      *
-     * @var FactoryInterface
+     * @var ColorfulFactoryInterface
      */
-    private $factory;
+    private $colorfulFactory;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(FactoryInterface $factory)
+    public function __construct(ColorfulFactoryInterface $factory)
     {
-        $this->factory = $factory;
+        $this->colorfulFactory = $factory;
         parent::__construct($factory);
     }
 
@@ -51,12 +50,11 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
     {
         $expression = func_num_args() === 4 ? func_get_arg(3) : null;
         if (
-            $this->factory instanceof ColorfulFactoryInterface &&
             $expression instanceof ExpressionInterface &&
             $source instanceof TransitionInterface &&
             $target instanceof PlaceInterface
         ) {
-            $arc = $this->factory->createOutputArc();
+            $arc = $this->colorfulFactory->createOutputArc();
             $arc->setPlace($target);
             $arc->setTransition($source);
             if ($arc instanceof ExpressionalOutputArcInterface) {
