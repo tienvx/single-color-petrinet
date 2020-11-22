@@ -23,7 +23,7 @@ class ExpressionalOutputArc extends AbstractArc implements ExpressionalOutputArc
     /**
      * @var ExpressionInterface|null
      */
-    protected $expression;
+    protected ?ExpressionInterface $expression = null;
 
     /**
      * {@inheritdoc}

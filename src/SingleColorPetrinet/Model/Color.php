@@ -12,58 +12,62 @@
 namespace SingleColorPetrinet\Model;
 
 /**
- * Implementation of ColourInterface.
+ * Implementation of ColorInterface.
  *
  * @author Tien Vo Xuan <tien.xuan.vo@gmail.com>
  */
 class Color implements ColorInterface
 {
     /**
-     * @var array
+     * @var string
      */
-    protected $data = [];
+    protected string $color;
 
-    public function __construct(array $values = [])
+    /**
+     * @var array|null
+     */
+    protected ?array $result = null;
+
+    /**
+     * Color constructor.
+     *
+     * @param string $color
+     */
+    public function __construct(string $color)
     {
-        $this->fromArray($values);
+        $this->setColor($color);
     }
 
-    public function set(string $key, string $value)
+    /**
+     * {@inheritdoc}
+     */
+    public function setColor(string $color): void
     {
-        $this->data[$key] = $value;
+        $this->color = $color;
+        $this->result = null;
     }
 
-    public function has(string $key): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function getColor(): string
     {
-        return isset($this->data[$key]);
+        return $this->color;
     }
 
-    public function get(string $key)
+    /**
+     * {@inheritdoc}
+     */
+    public function getResult(): ?array
     {
-        return $this->data[$key] ?? null;
+        return $this->result;
     }
 
-    public function toArray(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function setResult(array $result): void
     {
-        return $this->data;
-    }
-
-    public function fromArray(array $values)
-    {
-        foreach ($values as $key => $value)
-        {
-            $this->set($key, $value);
-        }
-    }
-
-    public function conflict(ColorInterface $color): bool
-    {
-        foreach ($color->toArray() as $key => $value) {
-            if ($this->has($key) && $this->get($key) !== $value) {
-                return true;
-            }
-        }
-
-        return false;
+        $this->result = $result;
     }
 }

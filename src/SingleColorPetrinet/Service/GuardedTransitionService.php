@@ -20,7 +20,7 @@ use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
+use SingleColorPetrinet\Service\Exception\ExpressionsConflictException;
 
 /**
  * Implementation of the TransitionServiceInterface.
@@ -34,14 +34,14 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
      *
      * @var ColorfulFactoryInterface
      */
-    private $colorfulFactory;
+    protected ColorfulFactoryInterface $colorfulFactory;
 
     /**
      * The expression evaluator.
      *
      * @var ExpressionEvaluatorInterface
      */
-    private $expressionEvaluator;
+    protected ExpressionEvaluatorInterface $expressionEvaluator;
 
     /**
      * Creates a new transition service.
@@ -49,8 +49,10 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
      * @param ColorfulFactoryInterface $colorfulFactory
      * @param ExpressionEvaluatorInterface $expressionEvaluator
      */
-    public function __construct(ColorfulFactoryInterface $colorfulFactory, ExpressionEvaluatorInterface $expressionEvaluator)
-    {
+    public function __construct(
+        ColorfulFactoryInterface $colorfulFactory,
+        ExpressionEvaluatorInterface $expressionEvaluator
+    ) {
         $this->colorfulFactory = $colorfulFactory;
         $this->expressionEvaluator = $expressionEvaluator;
         parent::__construct($colorfulFactory);
@@ -65,7 +67,8 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
             return false;
         }
 
-        if ($transition instanceof GuardedTransitionInterface &&
+        if (
+            $transition instanceof GuardedTransitionInterface &&
             $transition->getGuard() instanceof ExpressionInterface &&
             $marking instanceof ColorfulMarkingInterface
         ) {
@@ -97,31 +100,67 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
     public function fire(TransitionInterface $transition, MarkingInterface $marking)
     {
         if ($marking instanceof ColorfulMarkingInterface) {
-            // Calculates new colors
-            $newColors = [];
-            foreach ($transition->getOutputArcs() as $arc) {
-                if ($arc instanceof ExpressionalOutputArcInterface && $arc->getExpression() instanceof ExpressionInterface) {
-                    $result = $this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor());
-                    $newColor = $this->colorfulFactory->createColor($result);
-                    $newColors[] = $newColor;
-                }
-            }
-
-            // Checks color conflict
-            for ($i = 0; $i < count($newColors) - 1; $i++) {
-                if ($newColors[$i]->conflict($newColors[$i + 1])) {
-                    throw new OutputArcExpressionConflictException("Output arc's expressions conflict.");
-                }
-            }
+            $results = $this->evaluateExpressions($transition, $marking);
         }
 
         parent::fire($transition, $marking);
 
-        if ($marking instanceof ColorfulMarkingInterface) {
-            // Merge all new colors to a single color
-            foreach ($newColors as $newColor) {
-                $marking->getColor()->fromArray($newColor->toArray());
+        if ($marking instanceof ColorfulMarkingInterface && is_array($results)) {
+            $marking->setColor($this->colorfulFactory->createColor($this->mergeResults($results)));
+        }
+    }
+
+    /**
+     * @param TransitionInterface $transition
+     * @param ColorfulMarkingInterface $marking
+     *
+     * @return array
+     */
+    protected function evaluateExpressions(TransitionInterface $transition, ColorfulMarkingInterface $marking): array
+    {
+        $results = [];
+        foreach ($transition->getOutputArcs() as $arc) {
+            if (
+                $arc instanceof ExpressionalOutputArcInterface &&
+                $arc->getExpression() instanceof ExpressionInterface
+            ) {
+                $results[] = $this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor());
             }
         }
+        $this->checkConflict($results);
+
+        return $results;
+    }
+
+    /**
+     * @param array $results
+     */
+    protected function checkConflict(array $results): void
+    {
+        for ($i = 0; $i < count($results) - 1; $i++) {
+            foreach ($results[$i] as $key => $value) {
+                if (isset($results[$i + 1][$key]) && $results[$i + 1][$key] !== $value) {
+                    throw new ExpressionsConflictException("Output arc's expressions conflict.");
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array $results
+     *
+     * @return string
+     */
+    protected function mergeResults(array $results): string
+    {
+        $finalResult = [];
+        foreach ($results as $result) {
+            foreach ($result as $key => $value) {
+                $finalResult[$key] = $value;
+            }
+        }
+        ksort($finalResult);
+
+        return json_encode($finalResult);
     }
 }

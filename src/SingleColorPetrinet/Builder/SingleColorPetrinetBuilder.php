@@ -31,7 +31,7 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
      *
      * @var ColorfulFactoryInterface
      */
-    private $colorfulFactory;
+    protected ColorfulFactoryInterface $colorfulFactory;
 
     /**
      * {@inheritdoc}
@@ -78,7 +78,7 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
         $guard = func_num_args() === 1 ? func_get_arg(0) : null;
         $transition = parent::transition();
         if (is_string($guard) && $transition instanceof GuardedTransitionInterface) {
-            $transition->setGuard($this->colorfulFactory->createExpression($guard));
+            $transition->setGuard($this->colorfulFactory->createExpression($guard, true));
         }
 
         return $transition;

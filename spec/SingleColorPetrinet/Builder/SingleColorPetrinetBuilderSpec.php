@@ -47,7 +47,7 @@ class SingleColorPetrinetBuilderSpec extends ObjectBehavior
         ExpressionInterface $guard
     ) {
         $factory->createTransition()->willReturn($transition);
-        $factory->createExpression('transition guard')->willReturn($guard);
+        $factory->createExpression('transition guard', true)->willReturn($guard);
         $transition->setGuard($guard)->shouldBeCalled();
         $this->beConstructedWith($factory);
         $this->transition('transition guard')->shouldReturn($transition);

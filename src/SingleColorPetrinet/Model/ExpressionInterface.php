@@ -18,5 +18,13 @@ namespace SingleColorPetrinet\Model;
  */
 interface ExpressionInterface
 {
-    public function __toString();
+    /**
+     * @return string
+     */
+    public function getExpression(): string;
+
+    /**
+     * @return bool
+     */
+    public function isGuard(): bool;
 }

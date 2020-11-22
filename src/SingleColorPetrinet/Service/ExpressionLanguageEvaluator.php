@@ -14,6 +14,7 @@ namespace SingleColorPetrinet\Service;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Service\Exception\ColorInvalidException;
+use SingleColorPetrinet\Service\Exception\ExpressionInvalidException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
@@ -28,7 +29,7 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
      *
      * @var ExpressionLanguage
      */
-    private $expressionLanguage;
+    protected ExpressionLanguage $expressionLanguage;
 
     /**
      * Creates a new expression evaluator.
@@ -41,25 +42,51 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param ExpressionInterface $expression
+     * @param ColorInterface $color
+     *
+     * @return array|bool
+     *
+     * @throws ExpressionInvalidException
      */
     public function evaluate(ExpressionInterface $expression, ColorInterface $color)
     {
-        $this->validate($color);
-        return $this->expressionLanguage->evaluate((string) $expression, $color->toArray());
+        $result = $this->expressionLanguage->evaluate($expression->getExpression(), $this->evaluateColor($color));
+        if ($expression->isGuard() && !is_bool($result)) {
+            throw new ExpressionInvalidException(sprintf(
+                'Expression "%s" must be evaluated to boolean',
+                $expression->getExpression()
+            ));
+        } elseif (!$expression->isGuard() && !is_array($result)) {
+            throw new ExpressionInvalidException(sprintf(
+                'Expression "%s" must be evaluated to array',
+                $expression->getExpression()
+            ));
+        }
+
+        return $result;
     }
 
     /**
      * @param ColorInterface $color
      *
+     * @return array
+     *
      * @throws ColorInvalidException
      */
-    protected function validate(ColorInterface $color)
+    protected function evaluateColor(ColorInterface $color): array
     {
-        foreach ($color->toArray() as $key => $value) {
-            if (!ctype_alnum($key) || !ctype_alnum($value)) {
-                throw new ColorInvalidException('Key and value of color must be alphanumeric');
+        $result = $color->getResult();
+        if (!is_array($result)) {
+            $result = $this->expressionLanguage->evaluate($color->getColor());
+            if (!is_array($result)) {
+                throw new ColorInvalidException(sprintf('Color "%s" must be evaluated to array', $color->getColor()));
             }
+
+            $color->setResult($result);
         }
+
+
+        return $color->getResult();
     }
 }

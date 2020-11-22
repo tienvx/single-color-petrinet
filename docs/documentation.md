@@ -54,9 +54,7 @@ $petrinet = $builder->getPetrinet();
 $builder = new \Petrinet\Builder\MarkingBuilder($factory);
 
 // Creates color and sets some values to it
-$color = $factory->createColor([
-    'count' => 0,
-]);
+$color = $factory->createColor('{color: 0}');
 
 // Marks a place with the specified tokens number and color
 $marking = $builder
@@ -88,7 +86,7 @@ try {
     // The transition is not enabled and cannot be fired
 } catch (\SingleColorPetrinet\Service\Exception\ColorInvalidException $e) {
  // The color's keys and values must be alphanumeric if we use Expression Language
-} catch (\SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException $e) {
+} catch (\SingleColorPetrinet\Service\Exception\ExpressionsConflictException $e) {
   // The output arc's expressions change values of color in different ways
 }
 ```
