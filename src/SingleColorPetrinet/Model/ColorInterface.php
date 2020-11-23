@@ -12,26 +12,29 @@
 namespace SingleColorPetrinet\Model;
 
 /**
- * Interface for token colours.
+ * Interface for token colors.
  *
  * @author Tien Vo Xuan <tien.xuan.vo@gmail.com>
  */
 interface ColorInterface
 {
     /**
-     * @return array
+     * @param string $color
      */
-    public function toArray(): array;
+    public function setColor(string $color): void;
 
     /**
-     * @param array $values
+     * @return string
      */
-    public function fromArray(array $values);
+    public function getColor(): string;
 
     /**
-     * @param ColorInterface $color
-     *
-     * @return bool
+     * @return array|null
      */
-    public function conflict(ColorInterface $color): bool;
+    public function getResult(): ?array;
+
+    /**
+     * @param array $result
+     */
+    public function setResult(array $result): void;
 }

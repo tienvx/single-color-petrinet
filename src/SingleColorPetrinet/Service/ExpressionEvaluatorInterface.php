@@ -22,8 +22,6 @@ use SingleColorPetrinet\Model\ExpressionInterface;
 interface ExpressionEvaluatorInterface
 {
     /**
-     * Evaluates and return value of the expression.
-     *
      * @param ExpressionInterface $expression
      * @param ColorInterface $color
      *

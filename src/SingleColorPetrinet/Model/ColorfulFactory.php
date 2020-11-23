@@ -57,9 +57,9 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createColor(array $values = []): ColorInterface
+    public function createColor(string $color): ColorInterface
     {
-        $color = new $this->colorClass($values);
+        $color = new $this->colorClass($color);
 
         if (!$color instanceof ColorInterface) {
             throw new \RuntimeException('The color class must implement "SingleColorPetrinet\Model\ColorInterface".');
@@ -71,12 +71,14 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createExpression(string $expression)
+    public function createExpression(string $expression, bool $guard = false)
     {
-        $expression = new $this->expressionClass($expression);
+        $expression = new $this->expressionClass($expression, $guard);
 
         if (!$expression instanceof ExpressionInterface) {
-            throw new \RuntimeException('The expression class must implement "SingleColorPetrinet\Model\ExpressionInterface".');
+            throw new \RuntimeException(
+                'The expression class must implement "SingleColorPetrinet\Model\ExpressionInterface".'
+            );
         }
 
         return $expression;

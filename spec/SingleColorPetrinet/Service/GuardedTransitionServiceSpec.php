@@ -14,7 +14,7 @@ use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\Expression;
 use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use SingleColorPetrinet\Service\Exception\OutputArcExpressionConflictException;
+use SingleColorPetrinet\Service\Exception\ExpressionsConflictException;
 use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 
 class GuardedTransitionServiceSpec extends ObjectBehavior
@@ -80,18 +80,8 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         $arc1->getExpression()->willReturn($expression1);
         $arc2->getExpression()->willReturn($expression2);
 
-        $color1 = new Color([
-            'product' => 2,
-        ]);
-        $color2 = new Color([
-            'count' => 3,
-        ]);
-        $colorfulFactory->createColor([
-            'product' => 2,
-        ])->willReturn($color1);
-        $colorfulFactory->createColor([
-            'count' => 3,
-        ])->willReturn($color2);
+        $newColor = new Color('{"count":3,"product":2}');
+        $colorfulFactory->createColor('{"count":3,"product":2}')->willReturn($newColor);
 
         $expressionEvaluator->evaluate($expression1, $color)->willReturn([
             'product' => 2,
@@ -100,17 +90,10 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
             'count' => 3
         ]);
 
-        $color->fromArray([
-            'product' => 2,
-        ])->shouldBeCalled();
-
-        $color->fromArray([
-            'count' => 3,
-        ])->shouldBeCalled();
-
         $placeMarking->removeToken($token)->shouldBeCalledTimes(2);
         $colorfulFactory->createToken()->shouldBeCalledTimes(2)->willReturn($newToken);
         $placeMarking->setTokens([$newToken])->shouldBeCalledTimes(2);
+        $marking->setColor($newColor)->shouldBeCalled();
         $this->fire($transition, $marking);
     }
 
@@ -136,19 +119,6 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         $arc1->getExpression()->willReturn($expression1);
         $arc2->getExpression()->willReturn($expression2);
 
-        $color1 = new Color([
-            'count' => 1,
-        ]);
-        $color2 = new Color([
-            'count' => 3,
-        ]);
-        $colorfulFactory->createColor([
-            'count' => 1,
-        ])->willReturn($color1);
-        $colorfulFactory->createColor([
-            'count' => 3,
-        ])->willReturn($color2);
-
         $expressionEvaluator->evaluate($expression1, $color)->willReturn([
             'count' => 1,
         ]);
@@ -157,7 +127,7 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         ]);
 
         $this
-            ->shouldThrow(new OutputArcExpressionConflictException("Output arc's expressions conflict."))
+            ->shouldThrow(new ExpressionsConflictException("Output arc's expressions conflict."))
             ->duringFire($transition, $marking)
         ;
     }

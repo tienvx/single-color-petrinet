@@ -24,17 +24,18 @@ interface ColorfulFactoryInterface extends FactoryInterface
      * Creates a new expression instance.
      *
      * @param string $expression
+     * @param bool $guard
      *
      * @return ExpressionInterface
      */
-    public function createExpression(string $expression);
+    public function createExpression(string $expression, bool $guard = false);
 
     /**
      * Creates a new color instance.
      *
-     * @param array $values
+     * @param string $color
      *
      * @return ColorInterface
      */
-    public function createColor(array $values = []): ColorInterface;
+    public function createColor(string $color): ColorInterface;
 }

@@ -12,10 +12,10 @@
 namespace SingleColorPetrinet\Service\Exception;
 
 /**
- * Exception thrown when trying to evaluate output arc's expression but got conflict result.
+ * Exception thrown when output arc's expressions of a transition evaluated to conflict results.
  *
  * @author Tien Vo Xuan <tien.xuan.vo@gmail.com>
  */
-class OutputArcExpressionConflictException extends \RuntimeException
+class ExpressionsConflictException extends \RuntimeException
 {
 }

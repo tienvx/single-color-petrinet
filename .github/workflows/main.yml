@@ -7,20 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.4']
     name: PHP ${{ matrix.php-versions }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
+        tools: phpcs, composer:v2
         #extensions: mbstring, intl
 
-    - name: Install Dependencies
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install
       run: composer install
+
+    - name: Run PHP CS
+      run: phpcs --standard=PSR12 src
 
     - name: Test
       run: |

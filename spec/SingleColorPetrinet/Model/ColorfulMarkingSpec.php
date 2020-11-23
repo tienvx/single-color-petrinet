@@ -14,7 +14,7 @@ class ColorfulMarkingSpec extends ObjectBehavior
 
     function it_gets_and_sets_color()
     {
-        $color = new Color();
+        $color = new Color('{count: 1}');
         $this->setColor($color);
         $this->getColor()->shouldReturn($color);
     }

@@ -25,7 +25,7 @@ class ColorfulMarking extends BaseMarking implements ColorfulMarkingInterface
      *
      * @var ColorInterface
      */
-    protected $color;
+    protected ColorInterface $color;
 
     /**
      * {@inheritdoc}

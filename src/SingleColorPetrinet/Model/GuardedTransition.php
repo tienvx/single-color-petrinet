@@ -23,7 +23,7 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * @var ExpressionInterface|null
      */
-    protected $guard = null;
+    protected ?ExpressionInterface $guard = null;
 
     /**
      * {@inheritdoc}

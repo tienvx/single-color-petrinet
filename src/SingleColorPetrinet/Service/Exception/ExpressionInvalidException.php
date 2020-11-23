@@ -12,10 +12,10 @@
 namespace SingleColorPetrinet\Service\Exception;
 
 /**
- * Exception thrown when evaluating color using expression language.
+ * Exception thrown when validating results after evaluating expression language.
  *
  * @author Tien Vo Xuan <tien.xuan.vo@gmail.com>
  */
-class ColorInvalidException extends \RuntimeException
+class ExpressionInvalidException extends \RuntimeException
 {
 }
