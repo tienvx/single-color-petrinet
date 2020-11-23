@@ -25,6 +25,6 @@ $ composer require tienvx/single-color-petrinet
 [version-image]: http://img.shields.io/packagist/v/tienvx/single-color-petrinet.svg?style=flat
 
 [php-version-url]: https://packagist.org/packages/tienvx/coloured-petrinet
-[php-version-image]: http://img.shields.io/badge/php-7.2.0+-ff69b4.svg
+[php-version-image]: http://img.shields.io/badge/php-7.4.0+-ff69b4.svg
 
 [docs]: https://github.com/tienvx/single-color-petrinet/blob/master/docs/documentation.md#what-is-single-color-petrinet
