@@ -32,7 +32,7 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $colorClass = 'SingleColorPetrinet\Model\Color',
         $expressionClass = 'SingleColorPetrinet\Model\Expression',
         $petrinetClass = 'Petrinet\Model\Petrinet',
-        $placeClass = 'Petrinet\Model\Place',
+        $placeClass = 'SingleColorPetrinet\Model\Place',
         $transitionClass = 'SingleColorPetrinet\Model\GuardedTransition',
         $inputArcClass = 'Petrinet\Model\InputArc',
         $outputArcClass = 'SingleColorPetrinet\Model\ExpressionalOutputArc',
