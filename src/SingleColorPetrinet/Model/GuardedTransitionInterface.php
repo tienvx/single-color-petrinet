@@ -21,6 +21,13 @@ use Petrinet\Model\TransitionInterface;
 interface GuardedTransitionInterface extends TransitionInterface
 {
     /**
+     * Sets id of transition.
+     *
+     * @param int $id
+     */
+    public function setId(int $id): void;
+
+    /**
      * Gets guard of transition.
      */
     public function getGuard(): ?ExpressionInterface;
