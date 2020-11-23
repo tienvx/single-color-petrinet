@@ -20,5 +20,10 @@ use Petrinet\Model\PlaceInterface as BasePlaceInterface;
  */
 interface PlaceInterface extends BasePlaceInterface
 {
+    /**
+     * Sets id of place.
+     *
+     * @param int $id
+     */
     public function setId(int $id): void;
 }

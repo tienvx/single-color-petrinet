@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace SingleColorPetrinet\Model;
 
 use Petrinet\Model\Place as BasePlace;
@@ -21,6 +20,9 @@ use Petrinet\Model\Place as BasePlace;
  */
 class Place extends BasePlace implements PlaceInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function setId(int $id): void
     {
         $this->id = $id;

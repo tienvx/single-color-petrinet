@@ -12,6 +12,13 @@ class GuardedTransitionSpec extends ObjectBehavior
         $this->shouldHaveType('SingleColorPetrinet\Model\GuardedTransition');
     }
 
+    function it_gets_and_sets_id()
+    {
+        $this->getId()->shouldReturn(null);
+        $this->setId(123);
+        $this->getId()->shouldReturn(123);
+    }
+
     function it_gets_and_sets_guard()
     {
         $expression = new Expression('count > 1');

@@ -28,6 +28,14 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * {@inheritdoc}
      */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getGuard(): ?ExpressionInterface
     {
         return $this->guard;
