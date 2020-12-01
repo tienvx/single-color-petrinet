@@ -18,8 +18,8 @@
         "tienvx/petrinet": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^6.2",
-        "symfony/expression-language": "^5.1"
+        "phpspec/phpspec": "^7.0",
+        "symfony/expression-language": "^5.2"
     },
     "autoload": {
         "psr-4": {
