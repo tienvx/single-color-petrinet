@@ -12,6 +12,10 @@
 namespace SingleColorPetrinet\Model;
 
 use Petrinet\Model\Factory;
+use Petrinet\Model\InputArc;
+use Petrinet\Model\Petrinet;
+use Petrinet\Model\PlaceMarking;
+use Petrinet\Model\Token;
 
 /**
  * Implementation of FactoryInterface.
@@ -29,16 +33,16 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
      * @param string $colorClass
      */
     public function __construct(
-        $colorClass = 'SingleColorPetrinet\Model\Color',
-        $expressionClass = 'SingleColorPetrinet\Model\Expression',
-        $petrinetClass = 'Petrinet\Model\Petrinet',
-        $placeClass = 'SingleColorPetrinet\Model\Place',
-        $transitionClass = 'SingleColorPetrinet\Model\GuardedTransition',
-        $inputArcClass = 'Petrinet\Model\InputArc',
-        $outputArcClass = 'SingleColorPetrinet\Model\ExpressionalOutputArc',
-        $placeMarkingClass = 'Petrinet\Model\PlaceMarking',
-        $tokenClass = 'Petrinet\Model\Token',
-        $markingClass = 'Petrinet\Model\Marking'
+        $colorClass = Color::class,
+        $expressionClass = Expression::class,
+        $petrinetClass = Petrinet::class,
+        $placeClass = Place::class,
+        $transitionClass = GuardedTransition::class,
+        $inputArcClass = InputArc::class,
+        $outputArcClass = ExpressionalOutputArc::class,
+        $placeMarkingClass = PlaceMarking::class,
+        $tokenClass = Token::class,
+        $markingClass = ColorfulMarking::class
     ) {
         $this->colorClass = $colorClass;
         $this->expressionClass = $expressionClass;

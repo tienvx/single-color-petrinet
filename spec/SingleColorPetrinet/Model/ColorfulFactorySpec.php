@@ -51,4 +51,24 @@ class ColorfulFactorySpec extends ObjectBehavior
             ->duringCreateColor('')
         ;
     }
+
+    function it_creates_a_place()
+    {
+        $this->createPlace()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\Place');
+    }
+
+    function it_creates_a_transition()
+    {
+        $this->createTransition()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\GuardedTransition');
+    }
+
+    function it_creates_a_ouput_arc()
+    {
+        $this->createOutputArc()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\ExpressionalOutputArc');
+    }
+
+    function it_creates_a_marking()
+    {
+        $this->createMarking()->shouldBeAnInstanceOf('SingleColorPetrinet\Model\ColorfulMarking');
+    }
 }
