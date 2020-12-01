@@ -13,7 +13,6 @@ namespace SingleColorPetrinet\Service;
 
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
-use SingleColorPetrinet\Service\Exception\ColorInvalidException;
 use SingleColorPetrinet\Service\Exception\ExpressionInvalidException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -42,8 +41,7 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
     }
 
     /**
-     * @param ExpressionInterface $expression
-     * @param ColorInterface $color
+     * {@inheritdoc}
      *
      * @return array|bool
      *
@@ -51,7 +49,7 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
      */
     public function evaluate(ExpressionInterface $expression, ColorInterface $color)
     {
-        $result = $this->expressionLanguage->evaluate($expression->getExpression(), $this->evaluateColor($color));
+        $result = $this->expressionLanguage->evaluate($expression->getExpression(), $color->getValues());
         if ($expression->isGuard() && !is_bool($result)) {
             throw new ExpressionInvalidException(sprintf(
                 'Expression "%s" must be evaluated to boolean',
@@ -65,28 +63,5 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
         }
 
         return $result;
-    }
-
-    /**
-     * @param ColorInterface $color
-     *
-     * @return array
-     *
-     * @throws ColorInvalidException
-     */
-    protected function evaluateColor(ColorInterface $color): array
-    {
-        $result = $color->getResult();
-        if (!is_array($result)) {
-            $result = $this->expressionLanguage->evaluate($color->getColor());
-            if (!is_array($result)) {
-                throw new ColorInvalidException(sprintf('Color "%s" must be evaluated to array', $color->getColor()));
-            }
-
-            $color->setResult($result);
-        }
-
-
-        return $color->getResult();
     }
 }

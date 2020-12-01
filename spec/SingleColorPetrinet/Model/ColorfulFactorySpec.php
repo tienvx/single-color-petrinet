@@ -39,7 +39,7 @@ class ColorfulFactorySpec extends ObjectBehavior
 
     function it_creates_a_color()
     {
-        $this->createColor('{key: "value"}')->shouldBeAnInstanceOf('SingleColorPetrinet\Model\Color');
+        $this->createColor(['key' => 'value'])->shouldBeAnInstanceOf('SingleColorPetrinet\Model\Color');
     }
 
     function it_throws_an_exception_if_the_object_is_not_a_color_child()
@@ -48,7 +48,7 @@ class ColorfulFactorySpec extends ObjectBehavior
 
         $this
             ->shouldThrow(new \RuntimeException('The color class must implement "SingleColorPetrinet\Model\ColorInterface".'))
-            ->duringCreateColor('')
+            ->duringCreateColor([])
         ;
     }
 

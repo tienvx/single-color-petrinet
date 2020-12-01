@@ -11,6 +11,8 @@
 
 namespace SingleColorPetrinet\Model;
 
+use SingleColorPetrinet\Service\Exception\ColorInvalidException;
+
 /**
  * Implementation of ColorInterface.
  *
@@ -19,55 +21,73 @@ namespace SingleColorPetrinet\Model;
 class Color implements ColorInterface
 {
     /**
-     * @var string
+     * @var array
      */
-    protected string $color;
-
-    /**
-     * @var array|null
-     */
-    protected ?array $result = null;
+    protected array $values = [];
 
     /**
      * Color constructor.
      *
-     * @param string $color
+     * @param array $values
      */
-    public function __construct(string $color)
+    public function __construct(array $values)
     {
-        $this->setColor($color);
+        $this->setValues($values);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setColor(string $color): void
+    public function setValues(array $values): void
     {
-        $this->color = $color;
-        $this->result = null;
+        $this->values = [];
+
+        foreach ($values as $key => $value) {
+            $this->setValue($key, $value);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getColor(): string
+    public function getValues(): array
     {
-        return $this->color;
+        return $this->values;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getResult(): ?array
+    public function conflict(ColorInterface $color): bool
     {
-        return $this->result;
+        foreach ($color->getValues() as $key => $value) {
+            if (isset($this->values[$key]) && $this->values[$key] !== $value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setResult(array $result): void
+    public function merge(ColorInterface $color): void
     {
-        $this->result = $result;
+        foreach ($color->getValues() as $key => $value) {
+            $this->setValue($key, $value);
+        }
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    protected function setValue(string $key, string $value): void
+    {
+        if (!ctype_alnum($key) || !ctype_alnum($value)) {
+            throw new ColorInvalidException('Key and value of color must be alphanumeric');
+        }
+        $this->values[$key] = $value;
     }
 }

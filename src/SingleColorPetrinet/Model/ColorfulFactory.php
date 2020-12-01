@@ -61,9 +61,9 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createColor(string $color): ColorInterface
+    public function createColor(array $values): ColorInterface
     {
-        $color = new $this->colorClass($color);
+        $color = new $this->colorClass($values);
 
         if (!$color instanceof ColorInterface) {
             throw new \RuntimeException('The color class must implement "SingleColorPetrinet\Model\ColorInterface".');
