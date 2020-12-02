@@ -18,8 +18,8 @@ class ExpressionLanguageEvaluatorSpec extends ObjectBehavior
     function it_evaluates_expression_with_color()
     {
         $this->beConstructedWith(new ExpressionLanguage());
-        $this->evaluate(new Expression('count + 1 > count', true), new Color('{count: 2}'))->shouldReturn(true);
-        $this->evaluate(new Expression('{count: count + 1}'), new Color('{count: 7}'))->shouldReturn([
+        $this->evaluate(new Expression('count + 1 > count', true), new Color(['count' => '2']))->shouldReturn(true);
+        $this->evaluate(new Expression('{count: count + 1}'), new Color(['count' => '7']))->shouldReturn([
             'count' => 8,
         ]);
     }

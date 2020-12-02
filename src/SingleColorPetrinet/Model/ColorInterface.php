@@ -19,22 +19,24 @@ namespace SingleColorPetrinet\Model;
 interface ColorInterface
 {
     /**
-     * @param string $color
+     * @param array $values
      */
-    public function setColor(string $color): void;
+    public function setValues(array $values): void;
 
     /**
-     * @return string
+     * @return array
      */
-    public function getColor(): string;
+    public function getValues(): array;
 
     /**
-     * @return array|null
+     * @param ColorInterface $color
+     *
+     * @return bool
      */
-    public function getResult(): ?array;
+    public function conflict(ColorInterface $color): bool;
 
     /**
-     * @param array $result
+     * @param ColorInterface $color
      */
-    public function setResult(array $result): void;
+    public function merge(ColorInterface $color): void;
 }

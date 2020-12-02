@@ -80,9 +80,6 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
         $arc1->getExpression()->willReturn($expression1);
         $arc2->getExpression()->willReturn($expression2);
 
-        $newColor = new Color('{"count":3,"product":2}');
-        $colorfulFactory->createColor('{"count":3,"product":2}')->willReturn($newColor);
-
         $expressionEvaluator->evaluate($expression1, $color)->willReturn([
             'product' => 2,
         ]);
@@ -90,10 +87,25 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
             'count' => 3
         ]);
 
+        $color1 = new Color([
+            'count' => 3,
+        ]);
+        $colorfulFactory->createColor([
+            'count' => 3,
+        ])->willReturn($color1);
+        $color2 = new Color([
+            'product' => 2,
+        ]);
+        $colorfulFactory->createColor([
+            'product' => 2,
+        ])->willReturn($color2);
+
+        $color->merge($color1)->shouldBeCalled();
+        $color->merge($color2)->shouldBeCalled();
+
         $placeMarking->removeToken($token)->shouldBeCalledTimes(2);
         $colorfulFactory->createToken()->shouldBeCalledTimes(2)->willReturn($newToken);
         $placeMarking->setTokens([$newToken])->shouldBeCalledTimes(2);
-        $marking->setColor($newColor)->shouldBeCalled();
         $this->fire($transition, $marking);
     }
 
@@ -126,8 +138,19 @@ class GuardedTransitionServiceSpec extends ObjectBehavior
             'count' => 3
         ]);
 
+        $colorfulFactory->createColor([
+            'count' => 1,
+        ])->willReturn(new Color([
+            'count' => 1,
+        ]));
+        $colorfulFactory->createColor([
+            'count' => 3,
+        ])->willReturn(new Color([
+            'count' => 3,
+        ]));
+
         $this
-            ->shouldThrow(new ExpressionsConflictException("Output arc's expressions conflict."))
+            ->shouldThrow(new ExpressionsConflictException("Expressions conflict."))
             ->duringFire($transition, $marking)
         ;
     }
