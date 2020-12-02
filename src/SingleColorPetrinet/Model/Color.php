@@ -30,7 +30,7 @@ class Color implements ColorInterface
      *
      * @param array $values
      */
-    public function __construct(array $values)
+    public function __construct(array $values = [])
     {
         $this->setValues($values);
     }
