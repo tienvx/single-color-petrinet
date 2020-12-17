@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "tienvx/petrinet": "^1.0"
+        "florianv/petrinet": "^2.1"
     },
     "require-dev": {
         "phpspec/phpspec": "^7.0",
