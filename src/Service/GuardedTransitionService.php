@@ -57,7 +57,7 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
     public function __construct(
         ColorfulFactoryInterface $colorfulFactory,
         ExpressionEvaluatorInterface $expressionEvaluator,
-        ?TransitionServiceInterface $decorated
+        ?TransitionServiceInterface $decorated = null
     ) {
         $this->colorfulFactory = $colorfulFactory;
         $this->expressionEvaluator = $expressionEvaluator;
