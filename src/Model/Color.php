@@ -58,20 +58,6 @@ class Color implements ColorInterface
     /**
      * {@inheritdoc}
      */
-    public function conflict(ColorInterface $color): bool
-    {
-        foreach ($color->getValues() as $key => $value) {
-            if (isset($this->values[$key]) && $this->values[$key] !== $value) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function merge(ColorInterface $color): void
     {
         foreach ($color->getValues() as $key => $value) {

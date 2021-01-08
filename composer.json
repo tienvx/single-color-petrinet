@@ -17,12 +17,17 @@
         "florianv/petrinet": "^2.1"
     },
     "require-dev": {
-        "phpspec/phpspec": "^7.0",
+        "phpunit/phpunit": "^9.5",
         "symfony/expression-language": "^5.2"
     },
     "autoload": {
         "psr-4": {
-            "SingleColorPetrinet\\": "src/SingleColorPetrinet/"
+            "SingleColorPetrinet\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SingleColorPetrinet\\Tests\\": "tests/"
         }
     },
     "config": {

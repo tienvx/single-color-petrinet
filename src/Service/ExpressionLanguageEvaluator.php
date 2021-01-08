@@ -52,12 +52,12 @@ class ExpressionLanguageEvaluator implements ExpressionEvaluatorInterface
         $result = $this->expressionLanguage->evaluate($expression->getExpression(), $color->getValues());
         if ($expression->isGuard() && !is_bool($result)) {
             throw new ExpressionInvalidException(sprintf(
-                'Expression "%s" must be evaluated to boolean',
+                'Expression %s must be evaluated to boolean',
                 $expression->getExpression()
             ));
         } elseif (!$expression->isGuard() && !is_array($result)) {
             throw new ExpressionInvalidException(sprintf(
-                'Expression "%s" must be evaluated to array',
+                'Expression %s must be evaluated to array',
                 $expression->getExpression()
             ));
         }

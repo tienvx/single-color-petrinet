@@ -6,8 +6,8 @@ as well as services to manage its execution.
 
 ## Installation
 
-```bash
-$ composer require tienvx/single-color-petrinet
+```shell
+composer require tienvx/single-color-petrinet
 ```
 
 ## Documentation

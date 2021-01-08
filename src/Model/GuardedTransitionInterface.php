@@ -38,4 +38,16 @@ interface GuardedTransitionInterface extends TransitionInterface
      * @param ExpressionInterface $guard
      */
     public function setGuard(ExpressionInterface $guard);
+
+    /**
+     * Gets expression of transition.
+     */
+    public function getExpression(): ?ExpressionInterface;
+
+    /**
+     * Sets expression of transition.
+     *
+     * @param ExpressionInterface $expression
+     */
+    public function setExpression(ExpressionInterface $expression);
 }

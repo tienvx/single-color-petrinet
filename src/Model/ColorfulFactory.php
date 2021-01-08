@@ -13,6 +13,7 @@ namespace SingleColorPetrinet\Model;
 
 use Petrinet\Model\Factory;
 use Petrinet\Model\InputArc;
+use Petrinet\Model\OutputArc;
 use Petrinet\Model\Petrinet;
 use Petrinet\Model\PlaceMarking;
 use Petrinet\Model\Token;
@@ -24,8 +25,8 @@ use Petrinet\Model\Token;
  */
 class ColorfulFactory extends Factory implements ColorfulFactoryInterface
 {
-    private $colorClass;
-    private $expressionClass;
+    private string $colorClass;
+    private string $expressionClass;
 
     /**
      * {@inheritdoc}
@@ -39,7 +40,7 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $placeClass = Place::class,
         $transitionClass = GuardedTransition::class,
         $inputArcClass = InputArc::class,
-        $outputArcClass = ExpressionalOutputArc::class,
+        $outputArcClass = OutputArc::class,
         $placeMarkingClass = PlaceMarking::class,
         $tokenClass = Token::class,
         $markingClass = ColorfulMarking::class
@@ -66,7 +67,7 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $color = new $this->colorClass($values);
 
         if (!$color instanceof ColorInterface) {
-            throw new \RuntimeException('The color class must implement "SingleColorPetrinet\Model\ColorInterface".');
+            throw new \RuntimeException(sprintf('The color class must implement "%s".', ColorInterface::class));
         }
 
         return $color;
@@ -75,13 +76,13 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createExpression(string $expression, bool $guard = false)
+    public function createExpression(string $expression, bool $guard = false): ExpressionInterface
     {
         $expression = new $this->expressionClass($expression, $guard);
 
         if (!$expression instanceof ExpressionInterface) {
             throw new \RuntimeException(
-                'The expression class must implement "SingleColorPetrinet\Model\ExpressionInterface".'
+                sprintf('The expression class must implement "%s".', ExpressionInterface::class)
             );
         }
 

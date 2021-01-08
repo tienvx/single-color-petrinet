@@ -28,7 +28,7 @@ interface ColorfulFactoryInterface extends FactoryInterface
      *
      * @return ExpressionInterface
      */
-    public function createExpression(string $expression, bool $guard = false);
+    public function createExpression(string $expression, bool $guard = false): ExpressionInterface;
 
     /**
      * Creates a new color instance.
