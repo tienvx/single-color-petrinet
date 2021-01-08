@@ -6,6 +6,10 @@ It is a modification of [Coloured Petrinet](https://en.wikipedia.org/wiki/Colour
 Coloured Petrinet has, but with only one restriction:
 * There is only one color in the petrinet at a time
 
+As a result:
+* There is only one color stored in marking instead of tokens
+* Expressions on output arcs become single expression on transition
+
 That make Single Color Petrinet:
 * Not compatible with Coloured Petrinet
 * But still backward compatible with Petrinet
