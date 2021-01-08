@@ -26,6 +26,11 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     protected ?ExpressionInterface $guard = null;
 
     /**
+     * @var ExpressionInterface|null
+     */
+    protected ?ExpressionInterface $expression = null;
+
+    /**
      * {@inheritdoc}
      */
     public function setId(int $id): void
@@ -47,5 +52,21 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     public function setGuard(ExpressionInterface $guard)
     {
         $this->guard = $guard;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression(): ?ExpressionInterface
+    {
+        return $this->expression;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExpression(ExpressionInterface $expression)
+    {
+        $this->expression = $expression;
     }
 }

@@ -3,9 +3,8 @@
 ## What is Single Color Petrinet
 
 It is a modification of [Coloured Petrinet](https://en.wikipedia.org/wiki/Coloured_Petri_net). It has everything that
-Coloured Petrinet has, but with several restrictions:
+Coloured Petrinet has, but with only one restriction:
 * There is only one color in the petrinet at a time
-* Expressions of output arcs from a transition should not conflict with each other
 
 That make Single Color Petrinet:
 * Not compatible with Coloured Petrinet
@@ -28,20 +27,14 @@ $place = $builder->place();
 // Creating a transition
 $transition = $builder->transition();
 
-// Creating a transition with guard
-$transition = $builder->transition('count > 1');
+// Creating a transition with guard and output expression
+$transition = $builder->transition('count > 1', '{count: count + 1}');
 
 // Connecting a place to a transition
 $builder->connect($place, $transition);
 
-// Connecting a transition to a place
-$builder->connect($transition, $place);
-
-// Connecting a place to a transition with an arc of weight 3
-$builder->connect($place, $transition, 3);
-
-// Connecting a transition to a place with expression
-$builder->connect($builder->transition(), $builder->place(), 1, '{count: count + 1}');
+// Connecting a transition to a place with an arc of weight 3
+$builder->connect($transition, $place, 3);
 
 // Retrieving the Petrinet
 $petrinet = $builder->getPetrinet();
@@ -86,8 +79,6 @@ try {
     // The transition is not enabled and cannot be fired
 } catch (\SingleColorPetrinet\Service\Exception\ColorInvalidException $e) {
  // The color's keys and values must be alphanumeric if we use Expression Language
-} catch (\SingleColorPetrinet\Service\Exception\ExpressionsConflictException $e) {
-  // The output arc's expressions change values of color in different ways
 }
 ```
 

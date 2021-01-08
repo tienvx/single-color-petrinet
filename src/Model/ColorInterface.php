@@ -30,13 +30,6 @@ interface ColorInterface
 
     /**
      * @param ColorInterface $color
-     *
-     * @return bool
-     */
-    public function conflict(ColorInterface $color): bool;
-
-    /**
-     * @param ColorInterface $color
      */
     public function merge(ColorInterface $color): void;
 }

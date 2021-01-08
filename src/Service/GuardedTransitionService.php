@@ -15,20 +15,18 @@ use Petrinet\Model\MarkingInterface;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
 use Petrinet\Service\TransitionService;
+use Petrinet\Service\TransitionServiceInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
-use SingleColorPetrinet\Model\ColorInterface;
-use SingleColorPetrinet\Model\ExpressionalOutputArcInterface;
 use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use SingleColorPetrinet\Service\Exception\ExpressionsConflictException;
 
 /**
- * Implementation of the TransitionServiceInterface.
+ * Implementation of the GuardedTransitionServiceInterface.
  *
  * @author Tien Vo Xuan <tien.xuan.vo@gmail.com>
  */
-class GuardedTransitionService extends TransitionService implements GuardedTransitionServiceInterface
+class GuardedTransitionService implements GuardedTransitionServiceInterface
 {
     /**
      * The colorful factory.
@@ -45,18 +43,25 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
     protected ExpressionEvaluatorInterface $expressionEvaluator;
 
     /**
+     * @var TransitionServiceInterface
+     */
+    protected TransitionServiceInterface $decorated;
+
+    /**
      * Creates a new transition service.
      *
      * @param ColorfulFactoryInterface $colorfulFactory
      * @param ExpressionEvaluatorInterface $expressionEvaluator
+     * @param TransitionServiceInterface|null $decorated
      */
     public function __construct(
         ColorfulFactoryInterface $colorfulFactory,
-        ExpressionEvaluatorInterface $expressionEvaluator
+        ExpressionEvaluatorInterface $expressionEvaluator,
+        ?TransitionServiceInterface $decorated
     ) {
         $this->colorfulFactory = $colorfulFactory;
         $this->expressionEvaluator = $expressionEvaluator;
-        parent::__construct($colorfulFactory);
+        $this->decorated = $decorated ?? new TransitionService($colorfulFactory);
     }
 
     /**
@@ -64,7 +69,7 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
      */
     public function isEnabled(TransitionInterface $transition, MarkingInterface $marking)
     {
-        if (!parent::isEnabled($transition, $marking)) {
+        if (!$this->decorated->isEnabled($transition, $marking)) {
             return false;
         }
 
@@ -100,67 +105,16 @@ class GuardedTransitionService extends TransitionService implements GuardedTrans
      */
     public function fire(TransitionInterface $transition, MarkingInterface $marking)
     {
-        if ($marking instanceof ColorfulMarkingInterface) {
-            $colors = $this->getColors($transition, $marking);
-            $this->validateColors($colors);
-        }
+        $this->decorated->fire($transition, $marking);
 
-        parent::fire($transition, $marking);
-
-        if ($marking instanceof ColorfulMarkingInterface && is_array($colors)) {
-            $this->mergeColors($marking->getColor(), $colors);
-        }
-    }
-
-    /**
-     * @param TransitionInterface $transition
-     * @param ColorfulMarkingInterface $marking
-     *
-     * @return array
-     */
-    protected function getColors(TransitionInterface $transition, ColorfulMarkingInterface $marking): array
-    {
-        $colors = [];
-        foreach ($transition->getOutputArcs() as $arc) {
-            if (
-                $arc instanceof ExpressionalOutputArcInterface &&
-                $arc->getExpression() instanceof ExpressionInterface
-            ) {
-                $colors[] = $this->colorfulFactory->createColor(
-                    (array)$this->expressionEvaluator->evaluate($arc->getExpression(), $marking->getColor())
-                );
-            }
-        }
-
-        return $colors;
-    }
-
-    /**
-     * @param array $colors
-     */
-    protected function validateColors(array $colors): void
-    {
-        for ($i = 0; $i < count($colors) - 1; $i++) {
-            if (
-                $colors[$i] instanceof ColorInterface
-                && $colors[$i + 1] instanceof ColorInterface
-                && $colors[$i]->conflict($colors[$i + 1])
-            ) {
-                throw new ExpressionsConflictException("Expressions conflict.");
-            }
-        }
-    }
-
-    /**
-     * @param ColorInterface $markingColor
-     * @param array $colors
-     */
-    protected function mergeColors(ColorInterface $markingColor, array $colors): void
-    {
-        foreach ($colors as $color) {
-            if ($color instanceof ColorInterface) {
-                $markingColor->merge($color);
-            }
+        if (
+            $transition instanceof GuardedTransitionInterface &&
+            $transition->getExpression() instanceof ExpressionInterface &&
+            $marking instanceof ColorfulMarkingInterface
+        ) {
+            $marking->getColor()->merge($this->colorfulFactory->createColor(
+                (array)$this->expressionEvaluator->evaluate($transition->getExpression(), $marking->getColor())
+            ));
         }
     }
 }
