@@ -32,4 +32,17 @@ interface ColorInterface
      * @param ColorInterface $color
      */
     public function merge(ColorInterface $color): void;
+
+    /**
+     * @param string $key
+     *
+     * @return string|null
+     */
+    public function getValue(string $key): ?string;
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    public function setValue(string $key, string $value): void;
 }
