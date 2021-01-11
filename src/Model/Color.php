@@ -69,11 +69,16 @@ class Color implements ColorInterface
      * @param string $key
      * @param string $value
      */
-    protected function setValue(string $key, string $value): void
+    public function setValue(string $key, string $value): void
     {
         if (!ctype_alnum($key) || !ctype_alnum($value)) {
             throw new ColorInvalidException('Key and value of color must be alphanumeric');
         }
         $this->values[$key] = $value;
+    }
+
+    public function getValue(string $key): ?string
+    {
+        return $this->values[$key] ?? null;
     }
 }
