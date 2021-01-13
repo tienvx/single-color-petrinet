@@ -106,15 +106,5 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
     public function fire(TransitionInterface $transition, MarkingInterface $marking)
     {
         $this->decorated->fire($transition, $marking);
-
-        if (
-            $transition instanceof GuardedTransitionInterface &&
-            $transition->getExpression() instanceof ExpressionInterface &&
-            $marking instanceof ColorfulMarkingInterface
-        ) {
-            $marking->getColor()->merge($this->colorfulFactory->createColor(
-                (array)$this->expressionEvaluator->evaluate($transition->getExpression(), $marking->getColor())
-            ));
-        }
     }
 }

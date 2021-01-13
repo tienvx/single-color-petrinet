@@ -23,6 +23,6 @@ class ColorfulFactoryTest extends TestCase
     public function testCreateExpression(): void
     {
         $factory = new ColorfulFactory();
-        $this->assertInstanceOf(Expression::class, $factory->createExpression('test', true));
+        $this->assertInstanceOf(Expression::class, $factory->createExpression('test'));
     }
 }

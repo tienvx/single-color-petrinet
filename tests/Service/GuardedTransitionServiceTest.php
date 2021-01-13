@@ -98,33 +98,12 @@ class GuardedTransitionServiceTest extends TestCase
         $this->assertTrue($service->isEnabled($transition, $marking));
     }
 
-    public function testFireWithoutExpression(): void
+    public function testFire(): void
     {
         $transition = $this->createMock(TransitionInterface::class);
         $marking = $this->createMock(MarkingInterface::class);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
-        $decorated = $this->createMock(TransitionServiceInterface::class);
-        $decorated->expects($this->once())->method('fire')->with($transition, $marking);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
-        $service->fire($transition, $marking);
-    }
-
-    public function testFireWithExpression(): void
-    {
-        $result = ['key' => 'value'];
-        $newColor = $this->createMock(ColorInterface::class);
-        $expression = $this->createMock(ExpressionInterface::class);
-        $transition = $this->createMock(GuardedTransitionInterface::class);
-        $transition->expects($this->exactly(2))->method('getExpression')->willReturn($expression);
-        $color = $this->createMock(ColorInterface::class);
-        $color->expects($this->once())->method('merge')->with($newColor);
-        $marking = $this->createMock(ColorfulMarkingInterface::class);
-        $marking->expects($this->exactly(2))->method('getColor')->willReturn($color);
-        $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $factory->expects($this->once())->method('createColor')->with($result)->willReturn($newColor);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
-        $evaluator->expects($this->once())->method('evaluate')->with($expression, $color)->willReturn($result);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('fire')->with($transition, $marking);
         $service = new GuardedTransitionService($factory, $evaluator, $decorated);

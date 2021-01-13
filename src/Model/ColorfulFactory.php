@@ -76,9 +76,9 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createExpression(string $expression, bool $guard = false): ExpressionInterface
+    public function createExpression(string $expression): ExpressionInterface
     {
-        $expression = new $this->expressionClass($expression, $guard);
+        $expression = new $this->expressionClass($expression);
 
         if (!$expression instanceof ExpressionInterface) {
             throw new \RuntimeException(

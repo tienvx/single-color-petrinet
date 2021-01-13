@@ -15,12 +15,4 @@ class ExpressionTest extends TestCase
         $expression = new Expression('test');
         $this->assertSame('test', $expression->getExpression());
     }
-
-    public function testIsGuard(): void
-    {
-        $expression = new Expression('test');
-        $this->assertSame(false, $expression->isGuard());
-        $guard = new Expression('test', true);
-        $this->assertSame(true, $guard->isGuard());
-    }
 }

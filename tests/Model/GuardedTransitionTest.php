@@ -28,13 +28,4 @@ class GuardedTransitionTest extends TestCase
         $place->setGuard($guard);
         $this->assertSame($guard, $place->getGuard());
     }
-
-    public function testSetExpression(): void
-    {
-        $expression = new Expression('test');
-        $place = new GuardedTransition();
-        $this->assertNull($place->getGuard());
-        $place->setExpression($expression);
-        $this->assertSame($expression, $place->getExpression());
-    }
 }

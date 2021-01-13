@@ -8,7 +8,8 @@ Coloured Petrinet has, but with only one restriction:
 
 As a result:
 * There is only one color stored in marking instead of tokens
-* Expressions on output arcs become single expression on transition
+* Expressions on output arcs are removed
+* Marking's color may be changed when a transition is fired (Out of this library's scope)
 
 That make Single Color Petrinet:
 * Not compatible with Coloured Petrinet
@@ -32,7 +33,7 @@ $place = $builder->place();
 $transition = $builder->transition();
 
 // Creating a transition with guard and output expression
-$transition = $builder->transition('count > 1', '{count: count + 1}');
+$transition = $builder->transition('count > 1');
 
 // Connecting a place to a transition
 $builder->connect($place, $transition);
@@ -79,6 +80,8 @@ $transitionService->isEnabled($transition, $marking);
 // Fires the transition in the given marking
 try {
     $transitionService->fire($transition, $marking);
+    // Changing marking's color if needed
+    $marking->getColor()->setValue('count', 1);
 } catch (\Petrinet\Service\Exception\TransitionNotEnabledException $e) {
     // The transition is not enabled and cannot be fired
 }

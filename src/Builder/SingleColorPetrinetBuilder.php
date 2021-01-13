@@ -47,13 +47,9 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
         if (!$transition instanceof GuardedTransitionInterface) {
             return $transition;
         }
-        $guard = func_num_args() > 0 ? func_get_arg(0) : null;
-        $expression = func_num_args() === 2 ? func_get_arg(1) : null;
+        $guard = func_num_args() === 1 ? func_get_arg(0) : null;
         if (is_string($guard)) {
-            $transition->setGuard($this->colorfulFactory->createExpression($guard, true));
-        }
-        if (is_string($expression)) {
-            $transition->setExpression($this->colorfulFactory->createExpression($expression));
+            $transition->setGuard($this->colorfulFactory->createExpression($guard));
         }
 
         return $transition;

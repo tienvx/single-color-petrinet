@@ -24,20 +24,13 @@ class Expression implements ExpressionInterface
     protected string $expression;
 
     /**
-     * @var bool
-     */
-    protected bool $guard;
-
-    /**
      * Creates a new expression.
      *
      * @param string $expression
-     * @param bool $guard
      */
-    public function __construct(string $expression, bool $guard = false)
+    public function __construct(string $expression)
     {
         $this->expression = $expression;
-        $this->guard = $guard;
     }
 
     /**
@@ -46,13 +39,5 @@ class Expression implements ExpressionInterface
     public function getExpression(): string
     {
         return $this->expression;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isGuard(): bool
-    {
-        return $this->guard;
     }
 }

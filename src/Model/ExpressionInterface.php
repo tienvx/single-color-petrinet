@@ -22,9 +22,4 @@ interface ExpressionInterface
      * @return string
      */
     public function getExpression(): string;
-
-    /**
-     * @return bool
-     */
-    public function isGuard(): bool;
 }

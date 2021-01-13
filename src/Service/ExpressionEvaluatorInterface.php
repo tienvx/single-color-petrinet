@@ -25,7 +25,7 @@ interface ExpressionEvaluatorInterface
      * @param ExpressionInterface $expression
      * @param ColorInterface $color
      *
-     * @return mixed
+     * @return bool
      */
-    public function evaluate(ExpressionInterface $expression, ColorInterface $color);
+    public function evaluate(ExpressionInterface $expression, ColorInterface $color): bool;
 }
