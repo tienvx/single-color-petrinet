@@ -36,13 +36,13 @@ interface ColorInterface
     /**
      * @param string $key
      *
-     * @return string|null
+     * @return mixed|null
      */
-    public function getValue(string $key): ?string;
+    public function getValue(string $key);
 
     /**
      * @param string $key
-     * @param string $value
+     * @param mixed $value
      */
-    public function setValue(string $key, string $value): void;
+    public function setValue(string $key, $value): void;
 }

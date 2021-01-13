@@ -66,18 +66,20 @@ class Color implements ColorInterface
     }
 
     /**
-     * @param string $key
-     * @param string $value
+     * {@inheritdoc}
      */
-    public function setValue(string $key, string $value): void
+    public function setValue(string $key, $value): void
     {
-        if (!ctype_alnum($key) || !ctype_alnum($value)) {
-            throw new ColorInvalidException('Key and value of color must be alphanumeric');
-        }
-        $this->values[$key] = $value;
+        // Don't allow any function or method.
+        // TODO Handle a caution in
+        // https://symfony.com/doc/current/components/expression_language.html#passing-in-variables
+        $this->values[$key] = json_decode(json_encode($value));
     }
 
-    public function getValue(string $key): ?string
+    /**
+     * {@inheritdoc}
+     */
+    public function getValue(string $key)
     {
         return $this->values[$key] ?? null;
     }
