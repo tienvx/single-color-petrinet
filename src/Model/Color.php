@@ -11,8 +11,6 @@
 
 namespace SingleColorPetrinet\Model;
 
-use SingleColorPetrinet\Service\Exception\ColorInvalidException;
-
 /**
  * Implementation of ColorInterface.
  *

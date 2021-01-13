@@ -81,8 +81,6 @@ try {
     $transitionService->fire($transition, $marking);
 } catch (\Petrinet\Service\Exception\TransitionNotEnabledException $e) {
     // The transition is not enabled and cannot be fired
-} catch (\SingleColorPetrinet\Service\Exception\ColorInvalidException $e) {
- // The color's keys and values must be alphanumeric if we use Expression Language
 }
 ```
 
