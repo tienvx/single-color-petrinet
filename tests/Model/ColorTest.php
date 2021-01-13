@@ -39,6 +39,23 @@ class ColorTest extends TestCase
         $this->assertSame(['key' => 'value'], $color->getValues());
         $color->setValue('key2', 'value2');
         $this->assertSame(['key' => 'value', 'key2' => 'value2'], $color->getValues());
+        $color->setValue('key3', [
+            'test1' => 'Test 1',
+            'test2' => function () {
+                return 'Test 2';
+            },
+            'test3' => new class {
+                public string $test4 = 'Test 4';
+                public function test5(string $test6): string
+                {
+                    return $test6;
+                }
+            }
+        ]);
+        $this->assertSame(
+            '{"key":"value","key2":"value2","key3":{"test1":"Test 1","test2":{},"test3":{"test4":"Test 4"}}}',
+            json_encode($color->getValues())
+        );
     }
 
     public function testMerge(): void
