@@ -11,6 +11,7 @@
 
 namespace SingleColorPetrinet\Service;
 
+use Closure;
 use Petrinet\Model\MarkingInterface;
 use Petrinet\Model\PetrinetInterface;
 use Petrinet\Model\TransitionInterface;
@@ -18,7 +19,6 @@ use Petrinet\Service\TransitionService;
 use Petrinet\Service\TransitionServiceInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
-use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 
 /**
@@ -36,13 +36,6 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
     protected ColorfulFactoryInterface $colorfulFactory;
 
     /**
-     * The expression evaluator.
-     *
-     * @var ExpressionEvaluatorInterface
-     */
-    protected ExpressionEvaluatorInterface $expressionEvaluator;
-
-    /**
      * @var TransitionServiceInterface
      */
     protected TransitionServiceInterface $decorated;
@@ -51,16 +44,13 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
      * Creates a new transition service.
      *
      * @param ColorfulFactoryInterface $colorfulFactory
-     * @param ExpressionEvaluatorInterface $expressionEvaluator
      * @param TransitionServiceInterface|null $decorated
      */
     public function __construct(
         ColorfulFactoryInterface $colorfulFactory,
-        ExpressionEvaluatorInterface $expressionEvaluator,
         ?TransitionServiceInterface $decorated = null
     ) {
         $this->colorfulFactory = $colorfulFactory;
-        $this->expressionEvaluator = $expressionEvaluator;
         $this->decorated = $decorated ?? new TransitionService($colorfulFactory);
     }
 
@@ -75,10 +65,10 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
 
         if (
             $transition instanceof GuardedTransitionInterface &&
-            $transition->getGuard() instanceof ExpressionInterface &&
+            $transition->getGuard() instanceof Closure &&
             $marking instanceof ColorfulMarkingInterface
         ) {
-            return (bool)$this->expressionEvaluator->evaluate($transition->getGuard(), $marking->getColor());
+            return (bool)call_user_func($transition->getGuard(), $marking->getColor());
         }
 
         return true;
@@ -109,11 +99,11 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
 
         if (
             $transition instanceof GuardedTransitionInterface &&
-            $transition->getExpression() instanceof ExpressionInterface &&
+            $transition->getExpression() instanceof Closure &&
             $marking instanceof ColorfulMarkingInterface
         ) {
             $marking->getColor()->merge($this->colorfulFactory->createColor(
-                (array)$this->expressionEvaluator->evaluate($transition->getExpression(), $marking->getColor())
+                (array)call_user_func($transition->getExpression(), $marking->getColor())
             ));
         }
     }

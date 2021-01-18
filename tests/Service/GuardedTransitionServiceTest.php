@@ -11,9 +11,7 @@ use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorfulMarkingInterface;
 use SingleColorPetrinet\Model\ColorInterface;
-use SingleColorPetrinet\Model\ExpressionInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
-use SingleColorPetrinet\Service\ExpressionEvaluatorInterface;
 use SingleColorPetrinet\Service\GuardedTransitionService;
 
 /**
@@ -45,10 +43,9 @@ class GuardedTransitionServiceTest extends TestCase
         $transition = $this->createMock(TransitionInterface::class);
         $marking = $this->createMock(MarkingInterface::class);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('isEnabled')->with($transition, $marking)->willReturn(false);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $this->assertFalse($service->isEnabled($transition, $marking));
     }
 
@@ -57,44 +54,39 @@ class GuardedTransitionServiceTest extends TestCase
         $transition = $this->createMock(TransitionInterface::class);
         $marking = $this->createMock(MarkingInterface::class);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('isEnabled')->with($transition, $marking)->willReturn(true);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $this->assertTrue($service->isEnabled($transition, $marking));
     }
 
     public function testIsNotEnabledByGuard(): void
     {
-        $guard = $this->createMock(ExpressionInterface::class);
+        $guard = fn (ColorInterface $color): bool => false;
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->exactly(2))->method('getGuard')->willReturn($guard);
         $color = $this->createMock(ColorInterface::class);
         $marking = $this->createMock(ColorfulMarkingInterface::class);
         $marking->expects($this->once())->method('getColor')->willReturn($color);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
-        $evaluator->expects($this->once())->method('evaluate')->with($guard, $color)->willReturn(false);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('isEnabled')->with($transition, $marking)->willReturn(true);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $this->assertFalse($service->isEnabled($transition, $marking));
     }
 
     public function testIsEnabledByGuard(): void
     {
-        $guard = $this->createMock(ExpressionInterface::class);
+        $guard = fn (ColorInterface $color): bool => true;
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->exactly(2))->method('getGuard')->willReturn($guard);
         $color = $this->createMock(ColorInterface::class);
         $marking = $this->createMock(ColorfulMarkingInterface::class);
         $marking->expects($this->once())->method('getColor')->willReturn($color);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
-        $evaluator->expects($this->once())->method('evaluate')->with($guard, $color)->willReturn(true);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('isEnabled')->with($transition, $marking)->willReturn(true);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $this->assertTrue($service->isEnabled($transition, $marking));
     }
 
@@ -103,18 +95,17 @@ class GuardedTransitionServiceTest extends TestCase
         $transition = $this->createMock(TransitionInterface::class);
         $marking = $this->createMock(MarkingInterface::class);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('fire')->with($transition, $marking);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $service->fire($transition, $marking);
     }
 
     public function testFireWithExpression(): void
     {
         $result = ['key' => 'value'];
+        $expression = fn (ColorInterface $color): array => $result;
         $newColor = $this->createMock(ColorInterface::class);
-        $expression = $this->createMock(ExpressionInterface::class);
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->exactly(2))->method('getExpression')->willReturn($expression);
         $color = $this->createMock(ColorInterface::class);
@@ -123,11 +114,9 @@ class GuardedTransitionServiceTest extends TestCase
         $marking->expects($this->exactly(2))->method('getColor')->willReturn($color);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $factory->expects($this->once())->method('createColor')->with($result)->willReturn($newColor);
-        $evaluator = $this->createMock(ExpressionEvaluatorInterface::class);
-        $evaluator->expects($this->once())->method('evaluate')->with($expression, $color)->willReturn($result);
         $decorated = $this->createMock(TransitionServiceInterface::class);
         $decorated->expects($this->once())->method('fire')->with($transition, $marking);
-        $service = new GuardedTransitionService($factory, $evaluator, $decorated);
+        $service = new GuardedTransitionService($factory, $decorated);
         $service->fire($transition, $marking);
     }
 }
