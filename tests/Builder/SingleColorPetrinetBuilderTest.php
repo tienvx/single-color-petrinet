@@ -5,7 +5,7 @@ namespace SingleColorPetrinet\Tests\Builder;
 use PHPUnit\Framework\TestCase;
 use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
-use SingleColorPetrinet\Model\ExpressionInterface;
+use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
 
 /**
@@ -20,54 +20,44 @@ class SingleColorPetrinetBuilderTest extends TestCase
         $transition->expects($this->never())->method('setExpression');
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $factory->expects($this->once())->method('createTransition')->willReturn($transition);
-        $factory->expects($this->never())->method('createExpression');
         $builder = new SingleColorPetrinetBuilder($factory);
         $this->assertSame($transition, $builder->transition());
     }
 
     public function testCreateTransitionWithGuard(): void
     {
-        $guard = $this->createMock(ExpressionInterface::class);
+        $guard = fn (ColorInterface $color): bool => true;
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->once())->method('setGuard')->with($guard);
         $transition->expects($this->never())->method('setExpression');
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $factory->expects($this->once())->method('createTransition')->willReturn($transition);
-        $factory->expects($this->once())->method('createExpression')->with('test guard', true)->willReturn($guard);
         $builder = new SingleColorPetrinetBuilder($factory);
-        $this->assertSame($transition, $builder->transition('test guard'));
+        $this->assertSame($transition, $builder->transition($guard));
     }
 
     public function testCreateTransitionWithExpression(): void
     {
-        $expression = $this->createMock(ExpressionInterface::class);
+        $expression = fn (ColorInterface $color): array => [];
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->once())->method('setExpression')->with($expression);
         $transition->expects($this->never())->method('setGuard');
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $factory->expects($this->once())->method('createTransition')->willReturn($transition);
-        $factory->expects($this->once())->method('createExpression')->with(
-            'test expression',
-            false
-        )->willReturn($expression);
         $builder = new SingleColorPetrinetBuilder($factory);
-        $this->assertSame($transition, $builder->transition(null, 'test expression'));
+        $this->assertSame($transition, $builder->transition(null, $expression));
     }
 
     public function testCreateTransitionWithGuardAndExpression(): void
     {
-        $guard = $this->createMock(ExpressionInterface::class);
-        $expression = $this->createMock(ExpressionInterface::class);
+        $guard = fn (ColorInterface $color): bool => true;
+        $expression = fn (ColorInterface $color): array => [];
         $transition = $this->createMock(GuardedTransitionInterface::class);
         $transition->expects($this->once())->method('setExpression')->with($expression);
         $transition->expects($this->once())->method('setGuard')->with($guard);
         $factory = $this->createMock(ColorfulFactoryInterface::class);
         $factory->expects($this->once())->method('createTransition')->willReturn($transition);
-        $factory->expects($this->exactly(2))->method('createExpression')->withConsecutive(
-            ['test guard', true],
-            ['test expression', false],
-        )->willReturnOnConsecutiveCalls($guard, $expression);
         $builder = new SingleColorPetrinetBuilder($factory);
-        $this->assertSame($transition, $builder->transition('test guard', 'test expression'));
+        $this->assertSame($transition, $builder->transition($guard, $expression));
     }
 }

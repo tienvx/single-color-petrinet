@@ -32,7 +32,10 @@ $place = $builder->place();
 $transition = $builder->transition();
 
 // Creating a transition with guard and output expression
-$transition = $builder->transition('count > 1', '{count: count + 1}');
+$transition = $builder->transition(
+    fn (\SingleColorPetrinet\Model\ColorInterface $color) => $color->getValue('count') > 1,
+    fn (\SingleColorPetrinet\Model\ColorInterface $color) => ['count' => $color->getValue('count') + 1],
+);
 
 // Connecting a place to a transition
 $builder->connect($place, $transition);
@@ -63,12 +66,8 @@ $marking->setColor($color);
 ### Fire a transition
 
 ```php
-// Instantiates the expression evaluator
-$expressionLanguage = new \Symfony\Component\ExpressionLanguage\ExpressionLanguage();
-$expressionEvaluator = new \SingleColorPetrinet\Service\ExpressionLanguageEvaluator($expressionLanguage);
-
 // Instantiates the transition service
-$transitionService = new \SingleColorPetrinet\Service\GuardedTransitionService($factory, $expressionEvaluator);
+$transitionService = new \SingleColorPetrinet\Service\GuardedTransitionService($factory);
 
 // Gets all enabled transitions
 $transitions = $transitionService->getEnabledTransitions($petrinet, $marking);

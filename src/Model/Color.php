@@ -68,10 +68,7 @@ class Color implements ColorInterface
      */
     public function setValue(string $key, $value): void
     {
-        // Don't allow any function or method.
-        // TODO Handle a caution in
-        // https://symfony.com/doc/current/components/expression_language.html#passing-in-variables
-        $this->values[$key] = json_decode(json_encode($value));
+        $this->values[$key] = $value;
     }
 
     /**

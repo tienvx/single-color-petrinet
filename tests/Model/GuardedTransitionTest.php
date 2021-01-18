@@ -3,12 +3,11 @@
 namespace SingleColorPetrinet\Tests\Model;
 
 use PHPUnit\Framework\TestCase;
-use SingleColorPetrinet\Model\Expression;
+use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\GuardedTransition;
 
 /**
  * @covers \SingleColorPetrinet\Model\GuardedTransition
- * @covers \SingleColorPetrinet\Model\Expression
  */
 class GuardedTransitionTest extends TestCase
 {
@@ -22,7 +21,7 @@ class GuardedTransitionTest extends TestCase
 
     public function testSetGuard(): void
     {
-        $guard = new Expression('test');
+        $guard = fn (ColorInterface $color): bool => true;
         $place = new GuardedTransition();
         $this->assertNull($place->getGuard());
         $place->setGuard($guard);
@@ -31,7 +30,7 @@ class GuardedTransitionTest extends TestCase
 
     public function testSetExpression(): void
     {
-        $expression = new Expression('test');
+        $expression = fn (ColorInterface $color): array => [];
         $place = new GuardedTransition();
         $this->assertNull($place->getGuard());
         $place->setExpression($expression);

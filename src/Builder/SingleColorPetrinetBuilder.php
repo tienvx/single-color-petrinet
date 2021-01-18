@@ -11,6 +11,7 @@
 
 namespace SingleColorPetrinet\Builder;
 
+use Closure;
 use Petrinet\Builder\PetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
@@ -49,11 +50,11 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
         }
         $guard = func_num_args() > 0 ? func_get_arg(0) : null;
         $expression = func_num_args() === 2 ? func_get_arg(1) : null;
-        if (is_string($guard)) {
-            $transition->setGuard($this->colorfulFactory->createExpression($guard, true));
+        if ($guard instanceof Closure) {
+            $transition->setGuard($guard);
         }
-        if (is_string($expression)) {
-            $transition->setExpression($this->colorfulFactory->createExpression($expression));
+        if ($expression instanceof Closure) {
+            $transition->setExpression($expression);
         }
 
         return $transition;

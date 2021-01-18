@@ -25,8 +25,7 @@ use Petrinet\Model\Token;
  */
 class ColorfulFactory extends Factory implements ColorfulFactoryInterface
 {
-    private string $colorClass;
-    private string $expressionClass;
+    protected string $colorClass;
 
     /**
      * {@inheritdoc}
@@ -35,7 +34,6 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
      */
     public function __construct(
         $colorClass = Color::class,
-        $expressionClass = Expression::class,
         $petrinetClass = Petrinet::class,
         $placeClass = Place::class,
         $transitionClass = GuardedTransition::class,
@@ -46,7 +44,6 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         $markingClass = ColorfulMarking::class
     ) {
         $this->colorClass = $colorClass;
-        $this->expressionClass = $expressionClass;
         parent::__construct(
             $petrinetClass,
             $placeClass,
@@ -71,21 +68,5 @@ class ColorfulFactory extends Factory implements ColorfulFactoryInterface
         }
 
         return $color;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createExpression(string $expression, bool $guard = false): ExpressionInterface
-    {
-        $expression = new $this->expressionClass($expression, $guard);
-
-        if (!$expression instanceof ExpressionInterface) {
-            throw new \RuntimeException(
-                sprintf('The expression class must implement "%s".', ExpressionInterface::class)
-            );
-        }
-
-        return $expression;
     }
 }

@@ -11,6 +11,7 @@
 
 namespace SingleColorPetrinet\Model;
 
+use Closure;
 use Petrinet\Model\TransitionInterface;
 
 /**
@@ -28,26 +29,26 @@ interface GuardedTransitionInterface extends TransitionInterface
     public function setId(int $id): void;
 
     /**
-     * Gets guard of transition.
+     * Gets guard function of transition.
      */
-    public function getGuard(): ?ExpressionInterface;
+    public function getGuard(): ?Closure;
 
     /**
-     * Sets guard of transition.
+     * Sets guard function of transition.
      *
-     * @param ExpressionInterface $guard
+     * @param Closure $guard
      */
-    public function setGuard(ExpressionInterface $guard);
+    public function setGuard(Closure $guard);
 
     /**
-     * Gets expression of transition.
+     * Gets expression function of transition.
      */
-    public function getExpression(): ?ExpressionInterface;
+    public function getExpression(): ?Closure;
 
     /**
-     * Sets expression of transition.
+     * Sets expression function of transition.
      *
-     * @param ExpressionInterface $expression
+     * @param Closure $expression
      */
-    public function setExpression(ExpressionInterface $expression);
+    public function setExpression(Closure $expression);
 }

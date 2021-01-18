@@ -11,6 +11,7 @@
 
 namespace SingleColorPetrinet\Model;
 
+use Closure;
 use Petrinet\Model\Transition;
 
 /**
@@ -21,14 +22,14 @@ use Petrinet\Model\Transition;
 class GuardedTransition extends Transition implements GuardedTransitionInterface
 {
     /**
-     * @var ExpressionInterface|null
+     * @var Closure|null
      */
-    protected ?ExpressionInterface $guard = null;
+    protected ?Closure $guard = null;
 
     /**
-     * @var ExpressionInterface|null
+     * @var Closure|null
      */
-    protected ?ExpressionInterface $expression = null;
+    protected ?Closure $expression = null;
 
     /**
      * {@inheritdoc}
@@ -41,7 +42,7 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * {@inheritdoc}
      */
-    public function getGuard(): ?ExpressionInterface
+    public function getGuard(): ?Closure
     {
         return $this->guard;
     }
@@ -49,7 +50,7 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * {@inheritdoc}
      */
-    public function setGuard(ExpressionInterface $guard)
+    public function setGuard(Closure $guard)
     {
         $this->guard = $guard;
     }
@@ -57,7 +58,7 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): ?ExpressionInterface
+    public function getExpression(): ?Closure
     {
         return $this->expression;
     }
@@ -65,7 +66,7 @@ class GuardedTransition extends Transition implements GuardedTransitionInterface
     /**
      * {@inheritdoc}
      */
-    public function setExpression(ExpressionInterface $expression)
+    public function setExpression(Closure $expression)
     {
         $this->expression = $expression;
     }
