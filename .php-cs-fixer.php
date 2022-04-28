@@ -5,9 +5,11 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__.'/tests')
 ;
 
-return PhpCsFixer\Config::create()
+$config = new PhpCsFixer\Config();
+
+return $config
     ->setRules([
-        '@PSR2' => true,
+        '@PSR12' => true,
     ])
     ->setUsingCache(false)
     ->setFinder($finder)

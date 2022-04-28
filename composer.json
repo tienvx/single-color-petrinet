@@ -17,6 +17,7 @@
         "florianv/petrinet": "^2.1"
     },
     "require-dev": {
+        "ext-json": "*",
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {

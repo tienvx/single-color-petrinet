@@ -44,7 +44,7 @@ class ColorTest extends TestCase
             'test2' => function () {
                 return 'Test 2';
             },
-            'test3' => new class {
+            'test3' => new class () {
                 public string $test4 = 'Test 4';
                 public function test5(string $test6): string
                 {
