@@ -25,16 +25,17 @@ $factory = new \SingleColorPetrinet\Model\ColorfulFactory();
 // Instantiates the petrinet builder
 $builder = new \SingleColorPetrinet\Builder\SingleColorPetrinetBuilder($factory);
 
-// Creating a place
-$place = $builder->place();
+// Creating a place, with id
+$place = $builder->place(0);
 
-// Creating a transition
-$transition = $builder->transition();
+// Creating a transition, with id
+$transition = $builder->transition(null, null, 0);
 
-// Creating a transition with guard and output expression
+// Creating a transition with guard, output expression and id
 $transition = $builder->transition(
     fn (\SingleColorPetrinet\Model\ColorInterface $color) => $color->getValue('count') > 1,
     fn (\SingleColorPetrinet\Model\ColorInterface $color) => ['count' => $color->getValue('count') + 1],
+    1
 );
 
 // Connecting a place to a transition

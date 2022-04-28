@@ -57,7 +57,7 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function isEnabled(TransitionInterface $transition, MarkingInterface $marking)
+    public function isEnabled(TransitionInterface $transition, MarkingInterface $marking): bool
     {
         if (!$this->decorated->isEnabled($transition, $marking)) {
             return false;
@@ -65,7 +65,7 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
 
         if (
             $transition instanceof GuardedTransitionInterface &&
-            $transition->getGuard() instanceof Closure &&
+            $transition->getGuard() &&
             $marking instanceof ColorfulMarkingInterface
         ) {
             return (bool)call_user_func($transition->getGuard(), $marking->getColor());
@@ -93,13 +93,13 @@ class GuardedTransitionService implements GuardedTransitionServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function fire(TransitionInterface $transition, MarkingInterface $marking)
+    public function fire(TransitionInterface $transition, MarkingInterface $marking): void
     {
         $this->decorated->fire($transition, $marking);
 
         if (
             $transition instanceof GuardedTransitionInterface &&
-            $transition->getExpression() instanceof Closure &&
+            $transition->getExpression() &&
             $marking instanceof ColorfulMarkingInterface
         ) {
             $marking->getColor()->merge($this->colorfulFactory->createColor(
