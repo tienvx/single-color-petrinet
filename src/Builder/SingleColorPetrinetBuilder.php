@@ -27,18 +27,10 @@ use SingleColorPetrinet\Model\PlaceInterface;
 class SingleColorPetrinetBuilder extends PetrinetBuilder
 {
     /**
-     * The colorful factory.
-     *
-     * @var ColorfulFactoryInterface
-     */
-    protected ColorfulFactoryInterface $colorfulFactory;
-
-    /**
      * {@inheritdoc}
      */
     public function __construct(ColorfulFactoryInterface $factory)
     {
-        $this->colorfulFactory = $factory;
         parent::__construct($factory);
     }
 
