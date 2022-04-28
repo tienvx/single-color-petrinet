@@ -8,7 +8,8 @@ use SingleColorPetrinet\Model\ColorfulMarking;
 
 /**
  * @covers \SingleColorPetrinet\Model\ColorfulMarking
- * @covers \SingleColorPetrinet\Model\Color
+ *
+ * @uses \SingleColorPetrinet\Model\Color
  */
 class ColorfulMarkingTest extends TestCase
 {

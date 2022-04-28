@@ -14,7 +14,6 @@ namespace SingleColorPetrinet\Model;
 use Petrinet\Model\Factory;
 use Petrinet\Model\InputArc;
 use Petrinet\Model\OutputArc;
-use Petrinet\Model\Petrinet;
 use Petrinet\Model\PlaceMarking;
 use Petrinet\Model\Token;
 
