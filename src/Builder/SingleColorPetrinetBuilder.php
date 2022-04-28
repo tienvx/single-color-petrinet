@@ -17,7 +17,9 @@ use Petrinet\Model\PlaceInterface as PetrinetPlaceInterface;
 use Petrinet\Model\TransitionInterface as PetrinetTransitionInterface;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Model\PlaceInterface;
+use UnexpectedValueException;
 
 /**
  * Helps building Single Color Petrinets.
@@ -74,5 +76,22 @@ class SingleColorPetrinetBuilder extends PetrinetBuilder
         }
 
         return $place;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return PetrinetInterface
+     */
+    public function getPetrinet(): PetrinetInterface
+    {
+        $petrinet = parent::getPetrinet();
+        if (!$petrinet instanceof PetrinetInterface) {
+            throw new UnexpectedValueException(
+                sprintf('Factory must return petrinet instance of %s', PetrinetInterface::class)
+            );
+        }
+
+        return $petrinet;
     }
 }

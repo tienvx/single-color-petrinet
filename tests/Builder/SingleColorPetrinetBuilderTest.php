@@ -7,7 +7,9 @@ use SingleColorPetrinet\Builder\SingleColorPetrinetBuilder;
 use SingleColorPetrinet\Model\ColorfulFactoryInterface;
 use SingleColorPetrinet\Model\ColorInterface;
 use SingleColorPetrinet\Model\GuardedTransitionInterface;
+use SingleColorPetrinet\Model\PetrinetInterface;
 use SingleColorPetrinet\Model\PlaceInterface;
+use UnexpectedValueException;
 
 /**
  * @covers \SingleColorPetrinet\Builder\SingleColorPetrinetBuilder
@@ -52,5 +54,25 @@ class SingleColorPetrinetBuilderTest extends TestCase
         $factory->expects($this->once())->method('createPlace')->willReturn($place);
         $builder = new SingleColorPetrinetBuilder($factory);
         $this->assertSame($place, $builder->place($id));
+    }
+
+    /**
+     * @testWith ["SingleColorPetrinet\\Model\\PetrinetInterface"]
+     *           ["Petrinet\\Model\\PetrinetInterface"]
+     */
+    public function testGetPetrinet(string $petrinetClass): void
+    {
+        $petrinet = $this->createMock($petrinetClass);
+        $factory = $this->createMock(ColorfulFactoryInterface::class);
+        $factory->expects($this->once())->method('createPetrinet')->willReturn($petrinet);
+        $builder = new SingleColorPetrinetBuilder($factory);
+        if (PetrinetInterface::class !== $petrinetClass) {
+            $this->expectExceptionObject(
+                new UnexpectedValueException(
+                    sprintf('Factory must return petrinet instance of %s', PetrinetInterface::class)
+                )
+            );
+        }
+        $this->assertSame($petrinet, $builder->getPetrinet());
     }
 }

@@ -9,7 +9,8 @@ use SingleColorPetrinet\Model\ColorInterface;
 
 /**
  * @covers \SingleColorPetrinet\Model\ColorfulFactory
- * @covers \SingleColorPetrinet\Model\Color
+ *
+ * @uses \SingleColorPetrinet\Model\Color
  */
 class ColorfulFactoryTest extends TestCase
 {
