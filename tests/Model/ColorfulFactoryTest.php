@@ -22,7 +22,9 @@ class ColorfulFactoryTest extends TestCase
     public function testCreateInvalidColor(): void
     {
         $factory = new ColorfulFactory(\stdClass::class);
-        $this->expectExceptionObject(new \RuntimeException(sprintf('The color class must implement "%s".', ColorInterface::class)));
+        $this->expectExceptionObject(
+            new \RuntimeException(sprintf('The color class must implement "%s".', ColorInterface::class))
+        );
         $factory->createColor(['key' => 'value']);
     }
 }
