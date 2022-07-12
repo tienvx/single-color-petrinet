@@ -7,15 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0']
+        php-versions: ['7.4', '8.0', '8.1']
     name: PHP ${{ matrix.php-versions }}
     steps:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
-        tools: phpstan, phpcs, php-cs-fixer:3, phpunit, composer:v2
-        #extensions: mbstring, intl
+        tools: phpstan, phpcs, php-cs-fixer:3, composer:v2
+        coverage: pcov
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
       run: phpstan analyse src tests
 
     - name: Test & Generate Code Coverage
-      run: phpunit
+      run: vendor/bin/phpunit
 
     - name: Upload coverage results to Coveralls
       env:
