@@ -33,7 +33,7 @@ jobs:
       run: phpstan analyse src tests
 
     - name: Test & Generate Code Coverage
-      run: phpunit
+      run: vendor/bin/phpunit
 
     - name: Upload coverage results to Coveralls
       env:
